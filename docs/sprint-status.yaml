@@ -1,0 +1,113 @@
+# generated: 2025-11-03
+# project: math-tutor
+# project_key: math-tutor
+# tracking_system: file-system
+# story_location: {project-root}/docs/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+
+generated: 2025-11-03
+project: math-tutor
+project_key: math-tutor
+tracking_system: file-system
+story_location: "{project-root}/docs/stories"
+
+development_status:
+  # Epic 1: Project Foundation & Core Infrastructure
+  epic-1: backlog
+  1-1-initialize-nextjs-project-with-typescript: in-progress
+  1-2-create-basic-layout-and-routing-structure: backlog
+  1-3-set-up-tailwind-css-for-styling: backlog
+  1-4-configure-environment-variables-for-api-keys: backlog
+  1-5-create-basic-ui-shell-with-header-and-main-content-area: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Problem Input & Vision Parsing
+  epic-2: backlog
+  2-1-create-text-input-component-for-problem-entry: backlog
+  2-2-build-image-upload-component-with-drag-and-drop: backlog
+  2-3-integrate-react-dropzone-for-file-upload: backlog
+  2-4-create-openai-vision-api-integration-route: backlog
+  2-5-connect-image-upload-to-vision-api-with-loading-state: backlog
+  2-6-add-problem-type-selection-text-vs-image: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Math Rendering Engine
+  epic-3: backlog
+  3-1-install-and-configure-katex-library: backlog
+  3-2-create-latex-rendering-component-for-inline-and-block-equations: backlog
+  3-3-add-plain-text-to-latex-auto-conversion: backlog
+  3-4-integrate-latex-rendering-into-chat-messages: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Socratic Dialogue Core
+  epic-4: backlog
+  4-1-create-openai-chat-api-integration-route: backlog
+  4-2-design-and-implement-socratic-system-prompt: backlog
+  4-3-implement-conversation-history-management: backlog
+  4-4-build-tiered-hint-system-with-stuck-detection: backlog
+  4-5-add-response-validation-to-block-direct-answers: backlog
+  4-6-implement-language-adaptation-based-on-problem-complexity: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Interactive Canvas for Visual Problems
+  epic-5: backlog
+  5-1-choose-and-install-canvas-library-fabricjs-or-konvajs: backlog
+  5-2-create-canvas-overlay-component-on-uploaded-images: backlog
+  5-3-implement-drawing-tools-freehand-circle-line-highlight: backlog
+  5-4-add-color-picker-and-tool-options: backlog
+  5-5-implement-canvas-state-tracking-with-temporal-sequence: backlog
+  5-6-build-undoredo-functionality: backlog
+  5-7-create-canvas-snapshot-and-description-generator: backlog
+  5-8-integrate-canvas-with-gpt4-vision-for-spatial-understanding: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Chat Interface & Conversation UX
+  epic-6: backlog
+  6-1-create-chat-message-display-component: backlog
+  6-2-build-chat-input-field-with-send-button: backlog
+  6-3-add-loading-indicator-for-ai-responses: backlog
+  6-4-integrate-latex-rendering-into-chat-messages: backlog
+  6-5-add-new-problem-button-to-reset-session: backlog
+  6-6-implement-problem-type-detection-ui-adaptation: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Step Visualization & Progress Tracking
+  epic-7: backlog
+  7-1-create-step-visualization-component: backlog
+  7-2-implement-ai-based-stage-detection: backlog
+  7-3-ensure-non-spoiler-conceptual-stages: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Integration, Polish & Demo Optimization
+  epic-8: backlog
+  8-1-end-to-end-testing-of-all-three-demo-scenarios: backlog
+  8-2-ui-polish-and-visual-consistency: backlog
+  8-3-error-handling-and-recovery-ux: backlog
+  8-4-performance-optimization: backlog
+  8-5-documentation-and-readme: backlog
+  8-6-vercel-deployment-configuration: backlog
+  epic-8-retrospective: optional
