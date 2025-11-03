@@ -107,21 +107,30 @@ So that I can securely store OpenAI credentials without exposing them to clients
 
 ---
 
-**Story 1.5: Create Basic UI Shell with Header and Main Content Area**
+**Story 1.5: Create Basic UI Shell with Header and Main Content Area** ✅ COMPLETED
 
 As a student,
 I want to see a clean, professional interface when I load the app,
 So that I feel confident using the tutoring system.
 
 **Acceptance Criteria:**
-1. Header component with app title "Math Tutor"
-2. Main content area with centered layout
-3. Responsive design: works on desktop (1280x720+)
-4. Clean, minimal styling inspired by Khan Academy/Linear
-5. Professional typography and spacing
-6. Component renders without console errors
+1. ✅ Header component with app title "Math Tutor"
+2. ✅ Main content area with centered layout
+3. ✅ Responsive design: works on desktop (1280x720+)
+4. ✅ Clean, minimal styling inspired by Khan Academy/Linear
+5. ✅ Professional typography and spacing
+6. ✅ Component renders without console errors
 
 **Prerequisites:** Story 1.3
+
+**Implementation Details:**
+- Created `/src/components/Header.tsx` - Reusable header component with "Math Tutor" title
+- Updated `/src/app/layout.tsx` - Root layout now includes Header component with flex layout structure
+- Updated `/src/app/page.tsx` - Simplified home page with centered content area and placeholder sections
+- All styling uses Tailwind CSS with professional zinc color palette
+- Dark mode support included
+- No console errors, TypeScript compiles without issues
+- Dev server running successfully at localhost:3000
 
 ---
 
@@ -133,21 +142,37 @@ So that I feel confident using the tutoring system.
 
 **Stories:**
 
-**Story 2.1: Create Text Input Component for Problem Entry**
+**Story 2.1: Create Text Input Component for Problem Entry** ✅ COMPLETED
 
 As a student,
 I want to type math problems into a text field,
 So that I can quickly submit problems without needing an image.
 
 **Acceptance Criteria:**
-1. Textarea component for problem input with multi-line support
-2. "Submit Problem" button that captures input
-3. Input field clears after successful submission
-4. Character limit of 1000 characters with counter
-5. Basic validation: requires non-empty input
-6. Success state shows "Problem submitted" confirmation
+1. ✅ Textarea component for problem input with multi-line support
+2. ✅ "Submit Problem" button that captures input
+3. ✅ Input field clears after successful submission
+4. ✅ Character limit of 1000 characters with counter
+5. ✅ Basic validation: requires non-empty input
+6. ✅ Success state shows "Problem submitted" confirmation
 
 **Prerequisites:** Story 1.5
+
+**Implementation Details:**
+- Created `/src/components/ProblemInput/TextInput.tsx` - Client-side React component with full state management
+- Textarea with multi-line support and placeholder text
+- Real-time character counter displaying "X/1000 characters"
+- "Submit Problem" button with disabled state when invalid
+- Validation logic: non-empty input (trimmed) and max 1000 characters
+- Error states: displays validation error messages for empty or over-limit input
+- Success state: displays "Problem submitted successfully!" confirmation with checkmark icon
+- Auto-dismisses success message after 3 seconds
+- Clears input field after successful submission
+- Integrated into home page at `/src/app/page.tsx`
+- Professional Tailwind styling with proper focus states and accessibility (ARIA labels, semantic HTML)
+- Dark mode support included
+- TypeScript types for all props and state
+- Submission currently logs to console (placeholder for future API integration in Epic 4)
 
 ---
 
@@ -188,22 +213,36 @@ So that drag-and-drop upload is robust and well-tested.
 
 ---
 
-**Story 2.4: Create OpenAI Vision API Integration Route**
+**Story 2.4: Create OpenAI Vision API Integration Route** ✅ COMPLETED
 
 As a developer,
 I want a Next.js API route that calls GPT-4 Vision,
 So that I can parse problem images server-side.
 
 **Acceptance Criteria:**
-1. API route created at /api/parse-image
-2. Accepts POST request with base64 image data
-3. Calls OpenAI GPT-4 Vision API with appropriate prompt
-4. Prompt instructs: "Extract the math problem from this image. Return problem text and LaTeX if applicable."
-5. Returns structured response: { problemText: string, latex?: string, success: boolean }
-6. Error handling for API failures with user-friendly messages
-7. API key from environment variables (never exposed to client)
+1. ✅ API route created at /api/parse-image
+2. ✅ Accepts POST request with base64 image data
+3. ✅ Calls OpenAI GPT-4 Vision API with appropriate prompt
+4. ✅ Prompt instructs: "Extract the math problem from this image. Return problem text and LaTeX if applicable."
+5. ✅ Returns structured response: { problemText: string, latex?: string, success: boolean }
+6. ✅ Error handling for API failures with user-friendly messages
+7. ✅ API key from environment variables (never exposed to client)
 
 **Prerequisites:** Story 1.4
+
+**Implementation Details:**
+- Created `/src/app/api/parse-image/route.ts` - API route handler with OpenAI GPT-4 Vision integration
+- Installed OpenAI SDK (version 6.7.0)
+- Implemented comprehensive request validation (image format, size limits, malformed JSON)
+- Used GPT-4o model with vision capabilities
+- Temperature: 0.2 for consistent extraction
+- Max file size: 10MB (enforced)
+- Error handling for: network failures, rate limits, invalid API keys, malformed images
+- Returns structured JSON: { success, problemText, latex?, error? }
+- Created comprehensive README.md with API documentation
+- Created test-endpoint.ts for manual testing
+- All security requirements met: API key server-side only, no sensitive data logged
+- Ready for frontend integration once API key is configured
 
 ---
 

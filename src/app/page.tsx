@@ -1,15 +1,8 @@
+import TextInput from '@/components/ProblemInput/TextInput';
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Header section - placeholder for future navigation */}
-      <header className="border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mx-auto max-w-7xl">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            Math Tutor
-          </h1>
-        </div>
-      </header>
-
+    <>
       {/* Main content area - placeholder for chat interface and problem input */}
       <main className="flex-1 bg-zinc-50 dark:bg-black">
         <div className="mx-auto max-w-7xl px-6 py-12">
@@ -23,11 +16,9 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Placeholder for future components */}
-            <div className="w-full max-w-2xl space-y-4 rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
-              <p className="text-zinc-600 dark:text-zinc-400">
-                Problem input interface will go here
-              </p>
+            {/* Problem Input Interface */}
+            <div className="w-full max-w-2xl rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
+              <TextInput />
             </div>
 
             <div className="w-full max-w-2xl space-y-4 rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
@@ -47,6 +38,6 @@ export default function Home() {
           </p>
         </div>
       </footer>
-    </div>
+    </>
   );
 }

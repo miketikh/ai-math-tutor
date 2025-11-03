@@ -6,10 +6,20 @@
 }
 
 @theme inline {
+  /* Color system - clean, calm, professional */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Typography - using Geist fonts for modern, readable interface */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Custom theme colors for Math Tutor branding */
+  --color-primary: #3b82f6; /* blue-500 - for primary actions */
+  --color-primary-hover: #2563eb; /* blue-600 */
+  --color-success: #10b981; /* green-500 - for correct answers */
+  --color-warning: #f59e0b; /* amber-500 - for hints */
+  --color-error: #ef4444; /* red-500 - for errors */
 }
 
 @media (prefers-color-scheme: dark) {
