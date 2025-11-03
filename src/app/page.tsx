@@ -1,6 +1,30 @@
+'use client';
+
+import { useState } from 'react';
 import TextInput from '@/components/ProblemInput/TextInput';
+import ImageUpload from '@/components/ProblemInput/ImageUpload';
+
+type InputMode = 'text' | 'image';
 
 export default function Home() {
+  const [extractedProblem, setExtractedProblem] = useState<string>('');
+  const [inputMode, setInputMode] = useState<InputMode>('text');
+
+  const handleProblemExtracted = (problemText: string, latex?: string) => {
+    setExtractedProblem(problemText);
+    console.log('Problem extracted:', problemText);
+    if (latex) {
+      console.log('LaTeX detected:', latex);
+    }
+  };
+
+  const handleModeChange = (mode: InputMode) => {
+    if (mode !== inputMode) {
+      setInputMode(mode);
+      setExtractedProblem(''); // Clear previous input when switching modes
+    }
+  };
+
   return (
     <>
       {/* Main content area - placeholder for chat interface and problem input */}
@@ -16,10 +40,65 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Problem Input Interface */}
+            {/* Problem Input Interface with Mode Selection */}
             <div className="w-full max-w-2xl rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
-              <TextInput />
+              {/* Mode Selection Tabs */}
+              <div className="mb-6">
+                <div className="flex space-x-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900">
+                  <button
+                    onClick={() => handleModeChange('text')}
+                    className={`flex-1 rounded-md px-6 py-3 text-sm font-medium transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 ${
+                      inputMode === 'text'
+                        ? 'bg-white text-blue-600 shadow-sm dark:bg-zinc-800 dark:text-blue-400'
+                        : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+                    }`}
+                    aria-pressed={inputMode === 'text'}
+                    aria-label="Type Problem mode"
+                  >
+                    Type Problem
+                  </button>
+                  <button
+                    onClick={() => handleModeChange('image')}
+                    className={`flex-1 rounded-md px-6 py-3 text-sm font-medium transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 ${
+                      inputMode === 'image'
+                        ? 'bg-white text-blue-600 shadow-sm dark:bg-zinc-800 dark:text-blue-400'
+                        : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+                    }`}
+                    aria-pressed={inputMode === 'image'}
+                    aria-label="Upload Image mode"
+                  >
+                    Upload Image
+                  </button>
+                </div>
+              </div>
+
+              {/* Input Component - Conditionally Rendered with Transition */}
+              <div className="transition-opacity duration-200 ease-in-out">
+                {inputMode === 'text' ? (
+                  <div className="animate-fadeIn">
+                    <TextInput key="text-input" />
+                  </div>
+                ) : (
+                  <div className="animate-fadeIn">
+                    <ImageUpload key="image-upload" onProblemExtracted={handleProblemExtracted} />
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Display extracted problem for testing */}
+            {extractedProblem && (
+              <div className="w-full max-w-2xl rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
+                <h3 className="text-left text-lg font-semibold text-zinc-900 dark:text-zinc-50 mb-4">
+                  Extracted Problem Preview
+                </h3>
+                <div className="text-left bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                  <p className="text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
+                    {extractedProblem}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="w-full max-w-2xl space-y-4 rounded-lg border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
               <p className="text-zinc-600 dark:text-zinc-400">
