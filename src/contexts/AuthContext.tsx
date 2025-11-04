@@ -23,7 +23,8 @@ interface UserProfile {
   email: string;
   displayName: string;
   gradeLevel?: string;
-  focusTopic?: string;
+  focusTopics?: string[];
+  interests?: string[];
   skillProficiency: Record<string, SkillProficiencyData>;
   createdAt: Date;
   lastActive: Date;
@@ -77,7 +78,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.email,
           displayName: data.displayName,
           gradeLevel: data.gradeLevel,
-          focusTopic: data.focusTopic,
+          focusTopics: data.focusTopics || [],
+          interests: data.interests || [],
           skillProficiency: data.skillProficiency || {},
           createdAt: data.createdAt?.toDate() || new Date(),
           lastActive: data.lastActive?.toDate() || new Date(),
@@ -97,6 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const profile: Omit<UserProfile, 'uid'> = {
       email: user.email || '',
       displayName: displayName || user.displayName || 'Student',
+      focusTopics: [],
+      interests: [],
       skillProficiency: {},
       createdAt: new Date(),
       lastActive: new Date(),

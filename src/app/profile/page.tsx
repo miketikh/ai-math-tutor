@@ -7,7 +7,7 @@ import ProfileForm from '@/components/auth/ProfileForm';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-  const { user, loading, logout } = useAuth();
+  const { user, userProfile, loading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,6 +15,22 @@ export default function ProfilePage() {
       router.push('/login');
     }
   }, [user, loading, router]);
+
+  // Redirect to onboarding if profile is incomplete
+  useEffect(() => {
+    if (!loading && user && userProfile) {
+      const isProfileIncomplete =
+        !userProfile.gradeLevel ||
+        !userProfile.focusTopics ||
+        userProfile.focusTopics.length === 0 ||
+        !userProfile.interests ||
+        userProfile.interests.length === 0;
+
+      if (isProfileIncomplete) {
+        router.push('/onboarding');
+      }
+    }
+  }, [user, userProfile, loading, router]);
 
   if (loading) {
     return (
