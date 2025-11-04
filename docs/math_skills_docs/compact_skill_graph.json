@@ -1,0 +1,179 @@
+{
+  "metadata": {
+    "description": "Middle school math skill dependency graph - optimized for tutoring apps",
+    "target_audience": "6th-8th grade students",
+    "version": "1.0"
+  },
+  
+  "skills": {
+    "two_step_equations": {
+      "name": "Two-Step Equations",
+      "description": "2x + 5 = 13",
+      "layer1": ["one_step_equations", "order_of_operations"],
+      "layer2": ["understanding_variables", "basic_arithmetic"],
+      "diagnostics": {
+        "layer1": ["x + 5 = 13", "3x = 12"],
+        "layer2": ["What is x + 3 = 7?", "Calculate 13 - 5"]
+      }
+    },
+    
+    "one_step_equations": {
+      "name": "One-Step Equations",
+      "description": "x + 5 = 12 or 3x = 9",
+      "layer1": ["understanding_variables", "basic_arithmetic"],
+      "layer2": ["number_sense"],
+      "diagnostics": {
+        "layer1": ["What does x represent?", "Calculate 12 - 5"],
+        "layer2": ["Count to 20", "Add 5 + 3"]
+      }
+    },
+    
+    "multi_step_equations": {
+      "name": "Multi-Step Equations",
+      "description": "3x + 5 = 2x + 8 or 2(x + 3) = 16",
+      "layer1": ["two_step_equations", "combining_like_terms", "distributive_property"],
+      "layer2": ["one_step_equations", "order_of_operations", "understanding_variables"],
+      "diagnostics": {
+        "layer1": ["2x + 3 = 11", "Simplify 3x + 5x", "Expand 2(x + 3)"],
+        "layer2": ["x + 5 = 10", "Calculate 3 × 2 + 5", "What is x in algebra?"]
+      }
+    },
+    
+    "percentages": {
+      "name": "Percentages",
+      "description": "Find 15% of 60",
+      "layer1": ["decimals", "fractions", "multiplication"],
+      "layer2": ["division", "place_value"],
+      "diagnostics": {
+        "layer1": ["Convert 25% to decimal", "What is 0.5 × 10?", "What is 1/4 of 12?"],
+        "layer2": ["15 ÷ 100 = ?", "What place is the 5 in 0.15?"]
+      }
+    },
+    
+    "fractions": {
+      "name": "Fraction Operations",
+      "description": "1/2 + 1/3 or 2/3 × 4/5",
+      "layer1": ["equivalent_fractions", "multiplication", "division"],
+      "layer2": ["basic_arithmetic", "number_sense"],
+      "diagnostics": {
+        "layer1": ["Is 2/4 = 1/2?", "3 × 4 = ?", "12 ÷ 3 = ?"],
+        "layer2": ["5 + 3 = ?", "Count by 2s to 10"]
+      }
+    },
+    
+    "ratios_and_proportions": {
+      "name": "Ratios & Proportions",
+      "description": "If 2:3 = x:12, find x",
+      "layer1": ["fractions", "equivalent_fractions", "multiplication", "division"],
+      "layer2": ["basic_arithmetic"],
+      "diagnostics": {
+        "layer1": ["What is 2/3 as a ratio?", "4 × 3 = ?", "12 ÷ 3 = ?"],
+        "layer2": ["6 + 6 = ?", "10 - 4 = ?"]
+      }
+    },
+    
+    "distributive_property": {
+      "name": "Distributive Property",
+      "description": "3(x + 2) = 3x + 6",
+      "layer1": ["multiplication", "order_of_operations", "understanding_variables"],
+      "layer2": ["addition", "basic_arithmetic"],
+      "diagnostics": {
+        "layer1": ["3 × 5 = ?", "Calculate 2 + 3 × 4", "What does 3x mean?"],
+        "layer2": ["2 + 2 = ?", "Count to 10"]
+      }
+    },
+    
+    "combining_like_terms": {
+      "name": "Combining Like Terms",
+      "description": "3x + 5x = 8x",
+      "layer1": ["understanding_variables", "addition"],
+      "layer2": ["basic_arithmetic"],
+      "diagnostics": {
+        "layer1": ["What does x represent?", "5 + 3 = ?"],
+        "layer2": ["Count by 5s", "2 + 2 = ?"]
+      }
+    },
+    
+    "linear_inequalities": {
+      "name": "Linear Inequalities",
+      "description": "2x + 3 < 15",
+      "layer1": ["two_step_equations", "number_line", "comparing_numbers"],
+      "layer2": ["one_step_equations", "basic_arithmetic"],
+      "diagnostics": {
+        "layer1": ["Solve 2x + 3 = 15", "Which is bigger: 5 or 8?", "Show 3 on a number line"],
+        "layer2": ["Solve x + 5 = 10", "7 - 3 = ?"]
+      }
+    },
+    
+    "slope_and_linear_functions": {
+      "name": "Slope & Linear Functions",
+      "description": "Find slope from (1,2) and (3,6)",
+      "layer1": ["ratios_and_proportions", "fractions", "coordinate_plane"],
+      "layer2": ["division", "subtraction", "negative_numbers"],
+      "diagnostics": {
+        "layer1": ["What is 4/2 simplified?", "Plot (2,3) on graph"],
+        "layer2": ["6 - 2 = ?", "4 ÷ 2 = ?", "What is -3 on number line?"]
+      }
+    },
+    
+    "systems_of_equations": {
+      "name": "Systems of Equations",
+      "description": "Solve x + y = 5 and 2x - y = 1",
+      "layer1": ["multi_step_equations", "combining_like_terms", "substitution_or_elimination"],
+      "layer2": ["two_step_equations", "understanding_variables", "negative_numbers"],
+      "diagnostics": {
+        "layer1": ["Solve 2x + 3 = x + 7", "Simplify 3x - x + 5"],
+        "layer2": ["Solve 2x + 5 = 13", "What does x represent?"]
+      }
+    },
+    
+    "order_of_operations": {
+      "name": "Order of Operations (PEMDAS)",
+      "description": "3 + 2 × 4",
+      "layer1": ["multiplication", "addition", "subtraction", "division"],
+      "layer2": ["basic_arithmetic"],
+      "diagnostics": {
+        "layer1": ["2 × 3 = ?", "5 + 4 = ?", "8 - 3 = ?", "10 ÷ 2 = ?"],
+        "layer2": ["Count to 20"]
+      }
+    },
+    
+    "understanding_variables": {
+      "name": "Understanding Variables",
+      "description": "What x represents in equations",
+      "layer1": ["basic_arithmetic"],
+      "layer2": ["number_sense"],
+      "diagnostics": {
+        "layer1": ["If x + 3 = 7, what could x be?", "5 + 2 = ?"],
+        "layer2": ["Count to 10"]
+      }
+    },
+    
+    "basic_arithmetic": {
+      "name": "Basic Arithmetic",
+      "description": "Addition, subtraction, multiplication, division",
+      "layer1": [],
+      "layer2": [],
+      "diagnostics": {
+        "layer1": ["5 + 3 = ?", "8 - 2 = ?", "4 × 3 = ?", "12 ÷ 4 = ?"]
+      }
+    }
+  },
+  
+  "problem_to_skill_mapping": {
+    "word_problems": {
+      "percentage_problems": ["percentages", "multiplication", "division"],
+      "ratio_problems": ["ratios_and_proportions", "fractions"],
+      "equation_problems": ["one_step_equations", "two_step_equations", "multi_step_equations"],
+      "inequality_problems": ["linear_inequalities", "two_step_equations"]
+    }
+  },
+  
+  "usage_guide": {
+    "step1": "Identify the main skill required for the problem",
+    "step2": "If student struggles, test layer1 prerequisites",
+    "step3": "If layer1 also fails, test layer2 prerequisites",
+    "step4": "Provide targeted practice on the weakest skill identified",
+    "step5": "Once foundational skill improves, work back up to original problem"
+  }
+}

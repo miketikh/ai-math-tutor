@@ -1,0 +1,367 @@
+{
+  "skills": {
+    "one_step_equations": {
+      "display_name": "One-Step Equations",
+      "description": "Solving equations like x + 5 = 12 or 3x = 15",
+      "level": 1,
+      "direct_prerequisites": [
+        "understanding_variables",
+        "basic_arithmetic_operations"
+      ],
+      "sub_skills": {
+        "addition_subtraction_equations": {
+          "display_name": "Addition & Subtraction Equations",
+          "prerequisites": ["understanding_addition_subtraction"]
+        },
+        "multiplication_division_equations": {
+          "display_name": "Multiplication & Division Equations",
+          "prerequisites": ["understanding_multiplication_division"]
+        }
+      }
+    },
+    "two_step_equations": {
+      "display_name": "Two-Step Equations",
+      "description": "Solving equations like 2x + 5 = 13",
+      "level": 2,
+      "direct_prerequisites": [
+        "one_step_equations",
+        "order_of_operations"
+      ],
+      "deeper_prerequisites": [
+        "understanding_variables",
+        "basic_arithmetic_operations",
+        "inverse_operations"
+      ]
+    },
+    "multi_step_equations": {
+      "display_name": "Multi-Step Equations",
+      "description": "Solving equations with variables on both sides, parentheses",
+      "level": 3,
+      "direct_prerequisites": [
+        "two_step_equations",
+        "combining_like_terms",
+        "distributive_property"
+      ],
+      "deeper_prerequisites": [
+        "understanding_variables",
+        "order_of_operations",
+        "basic_arithmetic_operations"
+      ]
+    },
+    "understanding_variables": {
+      "display_name": "Understanding Variables",
+      "description": "What variables represent, evaluating expressions",
+      "level": 0,
+      "direct_prerequisites": [
+        "basic_arithmetic_operations"
+      ],
+      "sub_skills": {
+        "evaluating_expressions": {
+          "display_name": "Evaluating Expressions",
+          "prerequisites": ["basic_arithmetic_operations", "order_of_operations"]
+        },
+        "writing_expressions": {
+          "display_name": "Writing Expressions with Variables",
+          "prerequisites": ["understanding_word_problems"]
+        }
+      }
+    },
+    "fractions_fundamentals": {
+      "display_name": "Fractions Fundamentals",
+      "description": "Understanding what fractions represent",
+      "level": 0,
+      "direct_prerequisites": [
+        "understanding_division",
+        "understanding_multiplication"
+      ],
+      "sub_skills": {
+        "fraction_representation": {
+          "display_name": "Fraction Representation",
+          "prerequisites": ["understanding_division"]
+        },
+        "equivalent_fractions": {
+          "display_name": "Equivalent Fractions",
+          "prerequisites": ["understanding_multiplication", "understanding_division"]
+        },
+        "comparing_fractions": {
+          "display_name": "Comparing Fractions",
+          "prerequisites": ["equivalent_fractions"]
+        }
+      }
+    },
+    "fraction_operations": {
+      "display_name": "Fraction Operations",
+      "description": "Adding, subtracting, multiplying, dividing fractions",
+      "level": 1,
+      "direct_prerequisites": [
+        "fractions_fundamentals"
+      ],
+      "sub_skills": {
+        "adding_subtracting_fractions": {
+          "display_name": "Adding & Subtracting Fractions",
+          "prerequisites": ["fractions_fundamentals", "equivalent_fractions"],
+          "deeper_prerequisites": ["understanding_addition_subtraction"]
+        },
+        "multiplying_fractions": {
+          "display_name": "Multiplying Fractions",
+          "prerequisites": ["fractions_fundamentals"],
+          "deeper_prerequisites": ["understanding_multiplication"]
+        },
+        "dividing_fractions": {
+          "display_name": "Dividing Fractions",
+          "prerequisites": ["multiplying_fractions"],
+          "deeper_prerequisites": ["understanding_division", "understanding_multiplication"]
+        }
+      }
+    },
+    "decimals": {
+      "display_name": "Decimals",
+      "description": "Understanding and operating with decimal numbers",
+      "level": 1,
+      "direct_prerequisites": [
+        "fractions_fundamentals",
+        "place_value"
+      ],
+      "sub_skills": {
+        "decimal_operations": {
+          "display_name": "Decimal Operations",
+          "prerequisites": ["understanding_place_value", "basic_arithmetic_operations"]
+        },
+        "converting_decimals_fractions": {
+          "display_name": "Converting Decimals & Fractions",
+          "prerequisites": ["fractions_fundamentals", "understanding_division"]
+        }
+      }
+    },
+    "percentages": {
+      "display_name": "Percentages",
+      "description": "Understanding and calculating percentages",
+      "level": 2,
+      "direct_prerequisites": [
+        "fractions_fundamentals",
+        "decimals"
+      ],
+      "deeper_prerequisites": [
+        "understanding_division",
+        "understanding_multiplication"
+      ],
+      "sub_skills": {
+        "converting_percentages": {
+          "display_name": "Converting Between Percentages, Decimals, and Fractions",
+          "prerequisites": ["fractions_fundamentals", "decimals"]
+        },
+        "finding_percentages": {
+          "display_name": "Finding Percentages of Numbers",
+          "prerequisites": ["understanding_multiplication", "decimals"],
+          "deeper_prerequisites": ["understanding_division"]
+        },
+        "percentage_word_problems": {
+          "display_name": "Percentage Word Problems",
+          "prerequisites": ["finding_percentages", "understanding_word_problems"]
+        }
+      }
+    },
+    "ratios_and_proportions": {
+      "display_name": "Ratios & Proportions",
+      "description": "Understanding and solving ratio and proportion problems",
+      "level": 2,
+      "direct_prerequisites": [
+        "fractions_fundamentals",
+        "equivalent_fractions"
+      ],
+      "deeper_prerequisites": [
+        "understanding_division",
+        "understanding_multiplication"
+      ],
+      "sub_skills": {
+        "understanding_ratios": {
+          "display_name": "Understanding Ratios",
+          "prerequisites": ["fractions_fundamentals"]
+        },
+        "equivalent_ratios": {
+          "display_name": "Equivalent Ratios",
+          "prerequisites": ["equivalent_fractions", "understanding_multiplication"]
+        },
+        "solving_proportions": {
+          "display_name": "Solving Proportions",
+          "prerequisites": ["equivalent_ratios", "one_step_equations"],
+          "deeper_prerequisites": ["understanding_multiplication", "understanding_division"]
+        },
+        "proportional_relationships": {
+          "display_name": "Proportional Relationships",
+          "prerequisites": ["equivalent_ratios"],
+          "deeper_prerequisites": ["understanding_multiplication"]
+        }
+      }
+    },
+    "basic_arithmetic_operations": {
+      "display_name": "Basic Arithmetic Operations",
+      "description": "Addition, subtraction, multiplication, division with whole numbers",
+      "level": 0,
+      "direct_prerequisites": [],
+      "sub_skills": {
+        "understanding_addition_subtraction": {
+          "display_name": "Addition & Subtraction",
+          "prerequisites": []
+        },
+        "understanding_multiplication_division": {
+          "display_name": "Multiplication & Division",
+          "prerequisites": ["understanding_addition_subtraction"]
+        }
+      }
+    },
+    "order_of_operations": {
+      "display_name": "Order of Operations",
+      "description": "PEMDAS/BODMAS - correct order for evaluating expressions",
+      "level": 1,
+      "direct_prerequisites": [
+        "basic_arithmetic_operations"
+      ],
+      "deeper_prerequisites": [
+        "understanding_addition_subtraction",
+        "understanding_multiplication_division"
+      ]
+    },
+    "combining_like_terms": {
+      "display_name": "Combining Like Terms",
+      "description": "Simplifying expressions like 3x + 5x = 8x",
+      "level": 1,
+      "direct_prerequisites": [
+        "understanding_variables",
+        "basic_arithmetic_operations"
+      ]
+    },
+    "distributive_property": {
+      "display_name": "Distributive Property",
+      "description": "Understanding and applying a(b + c) = ab + ac",
+      "level": 2,
+      "direct_prerequisites": [
+        "understanding_variables",
+        "order_of_operations"
+      ],
+      "deeper_prerequisites": [
+        "understanding_multiplication_division",
+        "understanding_addition_subtraction"
+      ]
+    },
+    "integers_and_negative_numbers": {
+      "display_name": "Integers & Negative Numbers",
+      "description": "Operating with negative numbers",
+      "level": 1,
+      "direct_prerequisites": [
+        "basic_arithmetic_operations"
+      ],
+      "sub_skills": {
+        "number_line_with_negatives": {
+          "display_name": "Number Line with Negatives",
+          "prerequisites": []
+        },
+        "adding_subtracting_negatives": {
+          "display_name": "Adding & Subtracting Negative Numbers",
+          "prerequisites": ["understanding_addition_subtraction"]
+        },
+        "multiplying_dividing_negatives": {
+          "display_name": "Multiplying & Dividing Negative Numbers",
+          "prerequisites": ["understanding_multiplication_division"]
+        }
+      }
+    },
+    "exponents": {
+      "display_name": "Exponents",
+      "description": "Understanding and calculating powers",
+      "level": 1,
+      "direct_prerequisites": [
+        "understanding_multiplication_division"
+      ],
+      "sub_skills": {
+        "basic_exponents": {
+          "display_name": "Basic Exponents",
+          "prerequisites": ["understanding_multiplication_division"]
+        },
+        "exponent_rules": {
+          "display_name": "Exponent Rules",
+          "prerequisites": ["basic_exponents"]
+        }
+      }
+    },
+    "linear_inequalities": {
+      "display_name": "Linear Inequalities",
+      "description": "Solving inequalities like 2x + 3 < 15",
+      "level": 2,
+      "direct_prerequisites": [
+        "two_step_equations",
+        "understanding_inequalities"
+      ],
+      "deeper_prerequisites": [
+        "understanding_variables",
+        "basic_arithmetic_operations",
+        "number_line_with_negatives"
+      ]
+    },
+    "graphing_basics": {
+      "display_name": "Graphing on Coordinate Plane",
+      "description": "Plotting points and understanding x-y coordinates",
+      "level": 1,
+      "direct_prerequisites": [
+        "integers_and_negative_numbers"
+      ]
+    },
+    "linear_functions": {
+      "display_name": "Linear Functions",
+      "description": "Understanding y = mx + b, slope, y-intercept",
+      "level": 3,
+      "direct_prerequisites": [
+        "graphing_basics",
+        "two_step_equations",
+        "ratios_and_proportions"
+      ],
+      "deeper_prerequisites": [
+        "understanding_variables",
+        "fractions_fundamentals",
+        "integers_and_negative_numbers"
+      ],
+      "sub_skills": {
+        "understanding_slope": {
+          "display_name": "Understanding Slope",
+          "prerequisites": ["ratios_and_proportions", "graphing_basics"],
+          "deeper_prerequisites": ["fractions_fundamentals", "integers_and_negative_numbers"]
+        },
+        "slope_intercept_form": {
+          "display_name": "Slope-Intercept Form (y = mx + b)",
+          "prerequisites": ["understanding_slope", "understanding_variables"]
+        },
+        "graphing_linear_equations": {
+          "display_name": "Graphing Linear Equations",
+          "prerequisites": ["slope_intercept_form", "graphing_basics"]
+        }
+      }
+    },
+    "systems_of_equations": {
+      "display_name": "Systems of Equations",
+      "description": "Solving two equations with two variables",
+      "level": 4,
+      "direct_prerequisites": [
+        "multi_step_equations",
+        "graphing_linear_equations"
+      ],
+      "deeper_prerequisites": [
+        "two_step_equations",
+        "understanding_variables",
+        "combining_like_terms"
+      ]
+    }
+  },
+  "fundamental_skills": [
+    "basic_arithmetic_operations",
+    "understanding_addition_subtraction",
+    "understanding_multiplication_division",
+    "place_value"
+  ],
+  "skill_levels": {
+    "0": "Foundational - Basic concepts needed for all algebra",
+    "1": "Early Middle School - Introduction to algebraic thinking",
+    "2": "Middle School - Core algebra concepts",
+    "3": "Advanced Middle School - Complex algebraic topics",
+    "4": "Pre-Algebra to Algebra I - Advanced topics"
+  }
+}
