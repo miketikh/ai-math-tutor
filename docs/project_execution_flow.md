@@ -1,7 +1,7 @@
 # Math Tutor - Project Execution Flow
 
 **Date Created:** 2025-11-03
-**Last Updated:** 2025-11-03
+**Last Updated:** 2025-11-03 (Updated after completing Epic 4 Stories 1-4)
 
 ---
 
@@ -29,60 +29,68 @@ This document tracks the execution flow of the Math Tutor project implementation
 
 ---
 
-### Parallel Batch 1 (100% Complete)
+### Epic 2: Problem Input & Vision Parsing (100% Complete)
 
-**Execution:** All 4 stories executed in parallel
+**Execution:** Mixed - parallel and sequential
 
-| Story | Title | Status | Dependencies | Notes |
-|-------|-------|--------|--------------|-------|
-| 2.1 | Create Text Input Component for Problem Entry | ✅ Complete | Story 1.5 | Text input path |
-| 2.2 | Build Image Upload Component with Drag-and-Drop | ✅ Complete | Story 1.5 | Image upload path |
-| 2.4 | Create OpenAI Vision API Integration Route | ✅ Complete | Story 1.4 | API backend |
-| 3.1 | Install and Configure KaTeX Library | ✅ Complete | Story 1.3 | Math rendering |
+| Story | Title | Status | Execution |
+|-------|-------|--------|-----------|
+| 2.1 | Create Text Input Component | ✅ Complete | Parallel Batch 1 |
+| 2.2 | Build Image Upload Component | ✅ Complete | Parallel Batch 1 |
+| 2.3 | Integrate React-Dropzone | ✅ Complete | Parallel Batch 2 |
+| 2.4 | OpenAI Vision API Route | ✅ Complete | Parallel Batch 1 |
+| 2.5 | Connect Upload to Vision API | ✅ Complete | Parallel Batch 2 |
+| 2.6 | Problem Type Selection (Text vs Image) | ✅ Complete | Parallel Batch 3 |
 
 **Completion Date:** 2025-11-03
-**Parallelization Success:** All 4 stories completed simultaneously with no conflicts
+
+---
+
+### Epic 3: Math Rendering Engine (100% Complete)
+
+**Execution:** Mixed - parallel and sequential
+
+| Story | Title | Status | Execution |
+|-------|-------|--------|-----------|
+| 3.1 | Install and Configure KaTeX | ✅ Complete | Parallel Batch 1 |
+| 3.2 | LaTeX Rendering Component | ✅ Complete | Parallel Batch 2 |
+| 3.3 | Plain Text to LaTeX Conversion | ✅ Complete | Parallel Batch 3 |
+| 3.4 | LaTeX in Chat Messages | ✅ Complete | Solo |
+
+**Completion Date:** 2025-11-03
+
+---
+
+### Epic 4: Socratic Dialogue Core (67% Complete)
+
+**Execution:** Sequential (Stories 1-4 complete)
+
+| Story | Title | Status | Test Results |
+|-------|-------|--------|--------------|
+| 4.1 | OpenAI Chat API Route | ✅ Complete | 5/5 tests passed |
+| 4.2 | Socratic System Prompt | ✅ Complete | 12/12 tests passed |
+| 4.3 | Conversation History Management | ✅ Complete | 6/6 tests passed |
+| 4.4 | Tiered Hint System | ✅ Complete | 5/5 tests passed |
+| 4.5 | Response Validation | ⏳ Ready | Depends on 4.2 ✅ |
+| 4.6 | Language Adaptation | ⏳ Ready | Depends on 4.2 ✅ |
+
+**Completion Date (Stories 1-4):** 2025-11-03
 
 ---
 
 ## Upcoming Stories - Execution Plan
 
-### Parallel Batch 2 (Ready to Execute)
+### Epic 4 Final Batch (Ready Now - Can Parallelize!)
 
-**Status:** Ready - all dependencies met
+**Status:** ✅ Ready - all dependencies met
 
-| Story | Title | Dependencies | Epic |
-|-------|-------|--------------|------|
-| 2.3 | Integrate React-Dropzone for File Upload | Story 2.2 ✅ | Epic 2 |
-| 2.5 | Connect Image Upload to Vision API with Loading State | Story 2.4 ✅ | Epic 2 |
-| 3.2 | Create LaTeX Rendering Component for Inline and Block Equations | Story 3.1 ✅ | Epic 3 |
+| Story | Title | Dependencies | Notes |
+|-------|-------|--------------|-------|
+| 4.5 | Response Validation to Block Direct Answers | Story 4.2 ✅ | Independent |
+| 4.6 | Language Adaptation by Problem Complexity | Story 4.2 ✅ | Independent |
 
-**Execution Plan:** Run 3 task-executor agents in parallel
-
----
-
-### Parallel Batch 3
-
-**Status:** Blocked - waiting for Batch 2
-
-| Story | Title | Dependencies | Epic |
-|-------|-------|--------------|------|
-| 2.6 | Add Problem Type Selection (Text vs Image) | Stories 2.1 ✅, 2.2 ✅ | Epic 2 |
-| 3.3 | Add Plain Text to LaTeX Auto-Conversion | Story 3.2 (Batch 2) | Epic 3 |
-
-**Execution Plan:** Run 2 task-executor agents in parallel after Batch 2 completes
-
----
-
-### Sequential Story
-
-**Status:** Blocked - waiting for Batch 3
-
-| Story | Title | Dependencies | Epic |
-|-------|-------|--------------|------|
-| 3.4 | Integrate LaTeX Rendering into Chat Messages | Story 3.2 (Batch 2) | Epic 3 |
-
-**Note:** Story 3.4 can run solo or with Epic 4 stories (see Epic 4 below)
+**Execution Plan:** Run 2 task-executor agents in parallel
+**Result:** Completes Epic 4 - Full Socratic dialogue system ready
 
 ---
 
@@ -107,50 +115,92 @@ All Epic 4 stories must run sequentially due to tight coupling around prompt eng
 
 ## Epic 5: Interactive Canvas for Visual Problems
 
-**Status:** Blocked - waiting for Epic 2 completion
+**Status:** 🚫 **SKIPPED FOR MVP** (Can implement later for geometry problems)
 
-Some parallelization possible within Epic 5:
+**Rationale:**
+- Epic 5 is for visual/geometry problems (drawing on diagrams)
+- MVP can focus on algebra/calculus problems first
+- Epic 6 (Chat Interface) is more critical for usability
+- Canvas can be added post-MVP if needed
 
-### Canvas Foundation (Sequential)
+**If Implementing Later:**
+- Mostly sequential execution (5.1 → 5.2 → 5.3)
+- One parallel batch: Stories 5.4 + 5.5 (after 5.3)
+- Then sequential: 5.6 → 5.7 → 5.8
 
-| Story | Title | Dependencies | Execution |
-|-------|-------|--------------|-----------|
-| 5.1 | Choose and Install Canvas Library | Story 1.3 ✅ | Solo |
-| 5.2 | Create Canvas Overlay Component on Uploaded Images | Stories 5.1, 2.2 ✅ | Solo |
-| 5.3 | Implement Drawing Tools | Story 5.2 | Solo |
+| Story | Title | Status | Notes |
+|-------|-------|--------|-------|
+| 5.1 | Choose and Install Canvas Library | ⏸️ Deferred | For geometry MVP |
+| 5.2 | Canvas Overlay Component | ⏸️ Deferred | For geometry MVP |
+| 5.3 | Drawing Tools | ⏸️ Deferred | For geometry MVP |
+| 5.4 | Color Picker | ⏸️ Deferred | For geometry MVP |
+| 5.5 | Canvas State Tracking | ⏸️ Deferred | For geometry MVP |
+| 5.6 | Undo/Redo | ⏸️ Deferred | For geometry MVP |
+| 5.7 | Canvas Snapshot Generator | ⏸️ Deferred | For geometry MVP |
+| 5.8 | GPT-4 Vision Integration | ⏸️ Deferred | For geometry MVP |
 
-### Canvas Features (Can Parallelize 2-3 stories)
-
-| Story | Title | Dependencies | Execution |
-|-------|-------|--------------|-----------|
-| 5.4 | Add Color Picker and Tool Options | Story 5.3 | Parallel Group A |
-| 5.5 | Implement Canvas State Tracking | Story 5.3 | Parallel Group A |
-| 5.6 | Build Undo/Redo Functionality | Story 5.5 | Solo |
-| 5.7 | Create Canvas Snapshot and Description Generator | Story 5.5 | Solo |
-| 5.8 | Integrate Canvas with GPT-4 Vision | Stories 5.7, 4.1 | Solo |
-
-**Parallel Group A:** Stories 5.4 and 5.5 can run in parallel (both depend only on 5.3)
+**Decision:** Skip Epic 5, proceed directly to Epic 6 after completing Epic 4
 
 ---
 
 ## Epic 6: Chat Interface & Conversation UX
 
-**Status:** Blocked - waiting for Epic 4 completion
+**Status:** 🚀 **IN PROGRESS** (Round 1 complete, Round 2 ready)
 
-Some parallelization possible:
+**Goal:** Build the actual chat interface where students interact with the AI tutor
 
-### Chat UI Foundation (Can Parallelize)
+**Execution Strategy:** 3 rounds with parallelization
 
-| Story | Title | Dependencies | Execution |
-|-------|-------|--------------|-----------|
-| 6.1 | Create Chat Message Display Component | Story 4.3 | Parallel Group B |
-| 6.2 | Build Chat Input Field with Send Button | Story 6.1 | Solo |
-| 6.3 | Add Loading Indicator for AI Responses | Story 6.2 | Solo |
-| 6.4 | Integrate LaTeX Rendering into Chat Messages | Stories 6.1, 3.2 ✅ | Parallel Group B |
-| 6.5 | Add "New Problem" Button to Reset Session | Stories 6.1, 4.3 | Parallel Group B |
-| 6.6 | Implement Problem Type Detection UI Adaptation | Stories 6.1, 5.2 | Solo |
+### Round 1: Foundation (Solo - COMPLETED ✅)
 
-**Parallel Group B:** Stories 6.1, 6.4, and 6.5 can run in parallel (all depend on already-completed work)
+| Story | Title | Dependencies | Status |
+|-------|-------|--------------|--------|
+| 6.1 | Chat Message Display Component | Story 4.3 ✅ | ✅ Complete |
+
+**Completion Date:** 2025-11-03
+**Test Results:** 11/11 tests passed
+
+---
+
+### Round 2: Features (Parallel Batch - 3 agents) - ✅ READY NOW
+
+| Story | Title | Dependencies | Status |
+|-------|-------|--------------|--------|
+| 6.2 | Chat Input Field with Send Button | Story 6.1 ✅ | ⏳ Ready |
+| 6.4 | Integrate LaTeX Rendering | Stories 6.1 ✅, 3.2 ✅ | ⏳ Ready |
+| 6.5 | "New Problem" Button | Stories 6.1 ✅, 4.3 ✅ | ⏳ Ready |
+
+**Why Parallel:** All three only depend on 6.1 (now completed) and are independent of each other
+
+**Note:** Story 6.4 may already be complete since ChatMessage (from 3.4) already has LaTeX rendering built in
+
+---
+
+### Round 3: Polish (Solo)
+
+| Story | Title | Dependencies | Notes |
+|-------|-------|--------------|-------|
+| 6.3 | Loading Indicator for AI Responses | Story 6.2 | Depends on input field |
+| 6.6 | Problem Type Detection UI | Stories 6.1, 5.2 | **SKIP** (5.2 deferred) |
+
+**Note:** Story 6.6 can be skipped since Epic 5 is deferred
+
+---
+
+### Epic 6 Execution Timeline
+
+```
+Round 1 (Solo):     6.1 (Chat Message Display)
+                     ↓
+Round 2 (Parallel): 6.2 + 6.4 + 6.5 (3 agents simultaneously)
+                     ↓
+Round 3 (Solo):     6.3 (Loading Indicator)
+                     ↓
+                   DONE! (Skip 6.6)
+```
+
+**Total Execution:** 3 rounds (1 solo + 1 parallel batch + 1 solo)
+**Result:** Fully functional chat interface for algebra/calculus tutoring
 
 ---
 
@@ -196,32 +246,35 @@ All Epic 8 stories are mostly sequential as they involve end-to-end testing and 
 - **Result:** Basic project structure with UI shell
 
 ### Phase 2: Core Input & Rendering ✅ COMPLETE
-- **Parallel Batch 1** (Stories 2.1, 2.2, 2.4, 3.1): 4 agents in parallel
-- **Result:** Text input, image upload, vision API, KaTeX installed
-
-### Phase 3: Input & Rendering Integration (CURRENT)
-- **Parallel Batch 2** (Stories 2.3, 2.5, 3.2): 3 agents in parallel
-- **Parallel Batch 3** (Stories 2.6, 3.3): 2 agents in parallel
-- **Solo** (Story 3.4): 1 agent
+- **Epic 2** (Stories 2.1 → 2.6): 3 parallel batches
+- **Epic 3** (Stories 3.1 → 3.4): Parallel with Epic 2
 - **Result:** Complete problem input system with LaTeX rendering
 
-### Phase 4: AI Dialogue Engine
-- **Sequential** (Stories 4.1 → 4.6): 1 agent at a time
-- **Note:** Story 4.1 can run with Batch 3
+### Phase 3: AI Dialogue Engine ✅ 67% COMPLETE
+- **Epic 4 Part 1** (Stories 4.1 → 4.4): Sequential execution
+- **Epic 4 Part 2** (Stories 4.5 → 4.6): **NEXT - Can parallelize!**
 - **Result:** Socratic dialogue system with tiered hints
 
-### Phase 5: Visual Problem Solving
-- **Mixed** (Stories 5.1 → 5.8): Mostly sequential with one parallel batch
-- **Parallel Group A** (Stories 5.4, 5.5): 2 agents
-- **Result:** Canvas annotation with AI spatial understanding
+### Phase 4: Visual Problem Solving 🚫 SKIPPED FOR MVP
+- **Epic 5** (Stories 5.1 → 5.8): Deferred to post-MVP
+- **Rationale:** Focus on algebra/calculus first, add geometry later
+- **Result:** Canvas features postponed
 
-### Phase 6: UX Integration
-- **Mixed** (Stories 6.1 → 6.6 + 7.1 → 7.3): Some parallelization
-- **Parallel Group B** (Stories 6.1, 6.4, 6.5, 7.1): 4 agents
-- **Result:** Polished chat interface with progress tracking
+### Phase 5: Chat Interface (READY AFTER EPIC 4)
+- **Epic 6** (Stories 6.1 → 6.5): 3 rounds with parallelization
+  - Round 1: Solo (6.1)
+  - Round 2: Parallel (6.2 + 6.4 + 6.5)
+  - Round 3: Solo (6.3)
+- **Skip:** Story 6.6 (depends on Epic 5)
+- **Result:** Fully functional chat interface
 
-### Phase 7: Polish & Demo
-- **Mixed** (Stories 8.1 → 8.6): Mostly sequential
+### Phase 6: Progress Tracking (OPTIONAL)
+- **Epic 7** (Stories 7.1 → 7.3): Can parallel with Epic 6
+- **Status:** Optional for MVP - adds visual progress indicator
+- **Result:** Step visualization showing problem-solving stages
+
+### Phase 7: Polish & Demo (FINAL)
+- **Epic 8** (Stories 8.1 → 8.6): Mostly sequential
 - **Final Parallel Group** (Stories 8.2, 8.3, 8.4): 3 agents
 - **Result:** Demo-ready product deployed
 
@@ -239,11 +292,22 @@ All Epic 8 stories are mostly sequential as they involve end-to-end testing and 
 - **Group B:** 4 stories (6.1, 6.4, 6.5, 7.1)
 - **Final Group:** 3 stories (8.2, 8.3, 8.4)
 
-### Total Story Count
-- **Total Stories:** 54
-- **Completed:** 9 (16.7%)
-- **In Parallel Batches:** 18 stories (33.3% of total)
-- **Sequential Only:** 36 stories (66.7% of total)
+### Total Story Count (Updated)
+- **Total Stories (MVP Scope):** 44 (excluding Epic 5's 8 stories, Epic 7's 3 stories, 1 from Epic 6)
+- **Completed:** 18 stories (41% of MVP scope)
+  - Epic 1: 5/5 ✅
+  - Epic 2: 6/6 ✅
+  - Epic 3: 4/4 ✅
+  - Epic 4: 4/6 (67%)
+- **Remaining for MVP:** 26 stories
+  - Epic 4: 2 stories (4.5, 4.6)
+  - Epic 6: 4 stories (6.1, 6.2, 6.3, 6.4, 6.5 - skip 6.6)
+  - Epic 8: 6 stories
+- **Deferred/Skipped:** 14 stories
+  - Epic 5: 8 stories (canvas features)
+  - Epic 6: 1 story (6.6 - depends on Epic 5)
+  - Epic 7: 3 stories (optional progress visualization)
+  - Future: 2 stories (optional Epic 4 features if needed)
 
 ---
 
@@ -310,15 +374,32 @@ Epic 8 (Polish - Final)
 
 ## Next Action
 
-**Ready to Execute:** Parallel Batch 2 (Stories 2.3, 2.5, 3.2)
+**Current Status:** Epic 4 Stories 1-4 complete (67% of Epic 4 done)
 
-**Command:**
+**Ready to Execute:** Epic 4 Final Batch (Stories 4.5 + 4.6 in parallel)
+
+**Option 1: Complete Epic 4** (Recommended)
 ```bash
-# Launch 3 task-executor agents in parallel for:
-# - Story 2.3: Integrate React-Dropzone
-# - Story 2.5: Connect Image Upload to Vision API
-# - Story 3.2: Create LaTeX Rendering Component
+# Launch 2 task-executor agents in parallel for:
+# - Story 4.5: Response Validation to Block Direct Answers
+# - Story 4.6: Language Adaptation Based on Problem Complexity
+# Result: Epic 4 100% complete
 ```
+
+**Option 2: Jump to Epic 6** (If skipping 4.5 and 4.6)
+```bash
+# Launch 1 task-executor agent for:
+# - Story 6.1: Create Chat Message Display Component
+# Result: Foundation for chat interface ready
+```
+
+**Recommended Path:**
+1. Complete Epic 4 (Stories 4.5 + 4.6 in parallel) ← Do this first
+2. Then Epic 6 Round 1 (Story 6.1)
+3. Then Epic 6 Round 2 (Stories 6.2 + 6.4 + 6.5 in parallel)
+4. Then Epic 6 Round 3 (Story 6.3)
+5. Skip Epic 5 and Epic 7 for MVP
+6. Epic 8 for final polish
 
 ---
 

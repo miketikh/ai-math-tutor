@@ -4,7 +4,12 @@ import { useState } from 'react';
 
 const MAX_CHARACTERS = 1000;
 
-export default function TextInput() {
+interface TextInputProps {
+  /** Optional callback when problem is submitted */
+  onSubmit?: (problemText: string) => void;
+}
+
+export default function TextInput({ onSubmit }: TextInputProps) {
   const [input, setInput] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -36,19 +41,27 @@ export default function TextInput() {
       return;
     }
 
-    // Log the problem (placeholder for future API integration)
-    console.log('Problem submitted:', input);
+    // Store the problem text before clearing
+    const problemText = input.trim();
 
-    // Show success message
-    setShowSuccess(true);
+    // Call the onSubmit callback if provided
+    if (onSubmit) {
+      onSubmit(problemText);
+    } else {
+      // Legacy behavior for backward compatibility
+      console.log('Problem submitted:', problemText);
+
+      // Show success message
+      setShowSuccess(true);
+
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    }
 
     // Clear input
     setInput('');
-
-    // Hide success message after 3 seconds
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 3000);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

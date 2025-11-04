@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
-import Header from "@/components/Header";
+import { ConversationProvider } from "@/contexts/ConversationContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,10 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          {children}
-        </div>
+        <ConversationProvider>
+          <div className="flex min-h-screen flex-col">
+            {children}
+          </div>
+        </ConversationProvider>
       </body>
     </html>
   );

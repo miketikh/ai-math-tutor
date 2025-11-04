@@ -49,25 +49,27 @@ function validateImageData(image: string): { valid: boolean; error?: string } {
  */
 function parseAIResponse(content: string): { problemText: string; latex?: string } {
   try {
-    // Try to parse as JSON first
-    const parsed = JSON.parse(content);
+    // Try to parse as JSON first (should be raw JSON now with updated prompt)
+    const parsed = JSON.parse(content.trim());
     if (parsed.problemText) {
       return {
         problemText: parsed.problemText,
         latex: parsed.latex || undefined,
       };
     }
-  } catch {
-    // If not JSON, treat entire content as problem text
-    // Try to extract LaTeX if present (between $$ or \[ \])
-    const latexMatch = content.match(/\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]/);
+  } catch (error) {
+    // If JSON parsing fails, log the error and return the content as-is
+    console.error('Failed to parse AI response as JSON:', error);
+    console.error('AI response content:', content);
+
+    // Fallback: treat entire content as problem text
     return {
       problemText: content,
-      latex: latexMatch ? (latexMatch[1] || latexMatch[2])?.trim() : undefined,
+      latex: undefined,
     };
   }
 
-  // Fallback
+  // Fallback if parsed but no problemText field
   return { problemText: content };
 }
 
@@ -127,7 +129,7 @@ export async function POST(request: NextRequest) {
           content: [
             {
               type: 'text',
-              text: 'Extract the math problem from this image. Return the problem text and LaTeX notation if applicable. Format your response as JSON with fields: problemText (string) and latex (optional string).',
+              text: 'Extract the math problem from this image. Return ONLY valid JSON matching this exact format: {"problemText": "the problem text", "latex": "latex notation"}. Do not use markdown code blocks or any other formatting. Return only the raw JSON object.',
             },
             {
               type: 'image_url',
