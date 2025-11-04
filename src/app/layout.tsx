@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
 import { ConversationProvider } from "@/contexts/ConversationContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,11 +37,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ConversationProvider>
-          <div className="flex min-h-screen flex-col">
-            {children}
-          </div>
-        </ConversationProvider>
+        <AuthProvider>
+          <ConversationProvider>
+            <div className="flex min-h-screen flex-col">
+              {children}
+            </div>
+          </ConversationProvider>
+        </AuthProvider>
       </body>
     </html>
   );

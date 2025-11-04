@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
+import ProfileIncompleteBanner from '@/components/ProfileIncompleteBanner';
 import TextInput from '@/components/ProblemInput/TextInput';
 import ImageUpload from '@/components/ProblemInput/ImageUpload';
 import ChatMessageList from '@/components/ChatMessageList';
@@ -13,6 +16,29 @@ import { useConversation } from '@/contexts/ConversationContext';
 type InputMode = 'text' | 'image';
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
   const [extractedProblem, setExtractedProblem] = useState<string>('');
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [conversationStarted, setConversationStarted] = useState<boolean>(false);
@@ -133,6 +159,9 @@ export default function Home() {
     <div className="h-screen flex flex-col overflow-hidden">
       {/* Header with reset callback */}
       <Header onReset={handleReset} />
+
+      {/* Profile incomplete banner */}
+      <ProfileIncompleteBanner />
 
       {/* Main content area */}
       <main className="flex-1 bg-zinc-50 dark:bg-black flex flex-col overflow-hidden">
