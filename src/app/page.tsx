@@ -58,8 +58,25 @@ export default function Home() {
    * Handle sending a message in the chat
    */
   const handleSendMessage = async (message: string) => {
-    // Add user message to conversation
-    addMessage('user', message);
+    // Format user message with LaTeX using gpt-4o-mini
+    let formattedMessage = message;
+    try {
+      const formatResponse = await fetch('/api/format-math', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: message }),
+      });
+      const formatData = await formatResponse.json();
+      if (formatData.success && formatData.formattedText) {
+        formattedMessage = formatData.formattedText;
+      }
+    } catch (err) {
+      console.warn('Failed to format math, using original text:', err);
+      // Continue with original message
+    }
+
+    // Add formatted user message to conversation
+    addMessage('user', formattedMessage);
 
     // Set loading state
     setIsLoading(true);
@@ -113,16 +130,16 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Header with reset callback */}
       <Header onReset={handleReset} />
 
       {/* Main content area */}
-      <main className="flex-1 bg-zinc-50 dark:bg-black">
-        <div className="mx-auto max-w-7xl px-6 py-12">
+      <main className="flex-1 bg-zinc-50 dark:bg-black flex flex-col overflow-hidden">
+        <div className="mx-auto max-w-7xl w-full px-6 flex-1 flex flex-col overflow-hidden">
           {!conversationStarted ? (
             /* Problem Input Phase */
-            <div className="flex flex-col items-center justify-center space-y-8 text-center">
+            <div className="flex flex-col items-center justify-center space-y-8 text-center py-12">
               <div className="space-y-4">
                 <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                   Welcome to Math Tutor
@@ -186,9 +203,9 @@ export default function Home() {
             </div>
           ) : (
             /* Chat Interface Phase */
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col gap-6 flex-1 py-6 overflow-hidden">
               {/* Problem Context Display */}
-              <div className="w-full rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+              <div className="w-full rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950 flex-shrink-0">
                 <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mb-2">
                   Current Problem
                 </h3>
@@ -202,7 +219,7 @@ export default function Home() {
               </div>
 
               {/* Chat Interface */}
-              <div className="w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 flex flex-col" style={{ height: '600px' }}>
+              <div className="w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 flex flex-col flex-1 min-h-0">
                 {/* Chat Messages - Scrollable Area */}
                 <div className="flex-1 overflow-y-auto">
                   <ChatMessageList showTimestamps={false} />
@@ -234,13 +251,13 @@ export default function Home() {
       </main>
 
       {/* Footer section */}
-      <footer className="border-t border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950">
+      <footer className="border-t border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950 flex-shrink-0">
         <div className="mx-auto max-w-7xl">
           <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
             A portfolio demo of an AI-powered Socratic math tutor
           </p>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
