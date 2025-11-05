@@ -6,6 +6,33 @@
 
 ---
 
+## Implementation Status
+
+### ✅ Completed: Phase 0 & Phase 1 (Full)
+- **Phase 0**: Firebase project setup, authentication config, environment variables, skill graph upload to Firestore
+- **Phase 1**: Complete authentication system, user profiles, skill dashboard, navigation, onboarding flow
+
+### 📝 Significant Changes from Plan
+1. **User Profile Structure**: Changed `focusTopic` (string) → `focusTopics` (array), added `interests` (array) for personalized problem generation
+2. **Onboarding Flow**: Built required multi-step interactive onboarding page (`/onboarding`) instead of optional profile banner
+3. **Skill Graph**: Using `compact_skill_graph.json` with 2-layer dependency system (layer1/layer2) - 14 skills focused on middle school algebra
+4. **Problem Generation**: Skipped seed problems - will generate on-demand with AI using user context (grade level, interests)
+
+### 🎯 Next: Phase 2 - Skill Analysis & Problem Tagging
+Build skill detection and proficiency tracking:
+- Skill Graph Manager utility (load/query skill dependencies)
+- AI skill analysis API (detect required skills from problem text)
+- Proficiency tracking system (update after each problem)
+- API routes for skill checks and proficiency updates
+
+**Files to Create:**
+- `src/lib/skillGraph.ts` - SkillGraphManager class
+- `src/lib/proficiencyTracker.ts` - Proficiency update functions
+- `src/app/api/skills/analyze/route.ts` - AI skill detection
+- `src/app/api/proficiency/update/route.ts` - Update user proficiency
+
+---
+
 ## Core Decisions
 
 ### Architecture

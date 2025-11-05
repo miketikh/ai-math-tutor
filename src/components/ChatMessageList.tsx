@@ -93,7 +93,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
     <div
       ref={scrollContainerRef}
       onScroll={handleScroll}
-      className={`flex flex-col h-full overflow-y-auto scroll-smooth px-4 py-6 pb-4 ${className}`}
+      className={`flex flex-col flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth px-4 py-6 pb-4 ${className}`}
+      style={{ contain: 'layout paint' }}
     >
       {messages.length === 0 ? (
         <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">

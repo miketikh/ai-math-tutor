@@ -240,3 +240,151 @@ export function describeStuckLevel(level: number): string {
       return `Very stuck (level ${level}) - Give concrete actionable hints`;
   }
 }
+
+/**
+ * Skill gap analysis result
+ */
+export interface SkillGapAnalysis {
+  understands: boolean;
+  missingSkill?: string;
+  reasoning: string;
+  confidence: number;
+}
+
+/**
+ * Analyzes a student's response to determine if they understand a specific skill
+ * Uses GPT-4 to perform deep analysis of understanding
+ *
+ * @param message - The student's response to analyze
+ * @param requiredSkills - Array of skill IDs that are required for the problem
+ * @param skillDescriptions - Map of skill IDs to their descriptions for context
+ * @returns Promise<SkillGapAnalysis> - Analysis of which skills are missing
+ *
+ * @example
+ * ```typescript
+ * const analysis = await analyzeStudentResponse(
+ *   "I think I add 5 to both sides?",
+ *   ["one_step_equations", "basic_arithmetic"],
+ *   { "one_step_equations": "Solve equations with one operation" }
+ * );
+ * // Returns: { understands: true, reasoning: "Shows correct approach", confidence: 0.85 }
+ * ```
+ */
+export async function analyzeStudentResponse(
+  message: string,
+  requiredSkills: string[],
+  skillDescriptions: Record<string, string> = {}
+): Promise<SkillGapAnalysis> {
+  // Import OpenAI dynamically to avoid server-side issues
+  const OpenAI = (await import('openai')).default;
+
+  // Check if API key is configured
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-api-key-here') {
+    console.error('OpenAI API key not configured for gap analysis');
+    return {
+      understands: false,
+      reasoning: 'Unable to analyze response: API key not configured',
+      confidence: 0,
+    };
+  }
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
+  try {
+    // Build context about required skills
+    const skillContext = requiredSkills
+      .map(skillId => {
+        const description = skillDescriptions[skillId] || skillId;
+        return `- ${skillId}: ${description}`;
+      })
+      .join('\n');
+
+    // Build prompt for GPT-4
+    const prompt = `You are a math education expert analyzing a student's response to determine if they understand specific prerequisite skills.
+
+REQUIRED SKILLS:
+${skillContext}
+
+STUDENT'S RESPONSE:
+"${message}"
+
+Analyze this response and determine:
+1. Does the student demonstrate understanding of these skills?
+2. Which specific skill (if any) appears to be missing or weak?
+3. What is your reasoning for this assessment?
+4. How confident are you in this assessment (0.0 to 1.0)?
+
+Return your analysis as JSON in this exact format:
+{
+  "understands": boolean,
+  "missingSkill": "skill_id" or null,
+  "reasoning": "brief explanation",
+  "confidence": number between 0 and 1
+}
+
+Guidelines:
+- "I'm not sure", "I don't know", "help" → understands: false
+- Incorrect mathematical approach → identify which skill is missing
+- Vague or minimal response → understands: false
+- Correct approach or reasoning → understands: true
+- If multiple skills are weak, return the most fundamental one (earliest prerequisite)`;
+
+    // Call OpenAI with JSON mode
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a precise educational analyst. Return only valid JSON.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      response_format: { type: 'json_object' },
+      max_tokens: 300,
+      temperature: 0.3, // Low temperature for consistent analysis
+    });
+
+    const responseContent = response.choices[0]?.message?.content;
+    if (!responseContent) {
+      throw new Error('No response from OpenAI');
+    }
+
+    // Parse JSON response
+    const analysis = JSON.parse(responseContent) as SkillGapAnalysis;
+
+    // Validate response structure
+    if (typeof analysis.understands !== 'boolean') {
+      throw new Error('Invalid response format: understands must be boolean');
+    }
+
+    if (typeof analysis.reasoning !== 'string') {
+      throw new Error('Invalid response format: reasoning must be string');
+    }
+
+    if (typeof analysis.confidence !== 'number' || analysis.confidence < 0 || analysis.confidence > 1) {
+      // Default to medium confidence if invalid
+      analysis.confidence = 0.5;
+    }
+
+    console.log(`[Gap Analysis] Message: "${message.substring(0, 50)}..."`);
+    console.log(`[Gap Analysis] Understands: ${analysis.understands}, Missing: ${analysis.missingSkill || 'none'}`);
+    console.log(`[Gap Analysis] Reasoning: ${analysis.reasoning}`);
+
+    return analysis;
+  } catch (error: unknown) {
+    console.error('Error in gap analysis:', error);
+
+    // Return conservative fallback - assume student doesn't understand
+    return {
+      understands: false,
+      reasoning: 'Unable to analyze response due to error. Assuming gap for safety.',
+      confidence: 0.3,
+      missingSkill: requiredSkills[0] || undefined,
+    };
+  }
+}

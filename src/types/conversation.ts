@@ -27,6 +27,8 @@ export interface ConversationContextType {
   addMessage: (role: 'user' | 'assistant', content: string) => void;
   /** Clear all messages from the conversation */
   clearConversation: () => void;
+  /** Restore messages from a saved conversation (used for session recovery) */
+  restoreMessages: (messages: Message[]) => void;
   /** Get the conversation history (returns messages array) */
   getConversationHistory: () => Message[];
 }

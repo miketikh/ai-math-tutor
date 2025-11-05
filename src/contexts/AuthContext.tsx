@@ -16,6 +16,7 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { removeUndefined } from '@/lib/firestore-helpers';
 import { auth, db } from '@/lib/firebase';
 
 interface UserProfile {
@@ -106,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       lastActive: new Date(),
     };
 
-    await setDoc(userRef, profile);
+    await setDoc(userRef, removeUndefined(profile));
     return { uid: user.uid, ...profile };
   };
 

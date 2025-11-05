@@ -12,6 +12,14 @@
         "-y",
         "@upstash/context7-mcp"
       ]
+    },
+    "firebase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firebase-tools@latest",
+        "mcp"
+      ]
     }
   }
 }

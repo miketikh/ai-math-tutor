@@ -69,6 +69,14 @@ export function ConversationProvider({ children }: ConversationProviderProps) {
   }, []);
 
   /**
+   * Restore messages from a saved conversation
+   * Used when resuming a session
+   */
+  const restoreMessages = useCallback((messagesToRestore: Message[]) => {
+    setMessages(messagesToRestore);
+  }, []);
+
+  /**
    * Get the conversation history
    * Returns a copy of the messages array
    */
@@ -80,6 +88,7 @@ export function ConversationProvider({ children }: ConversationProviderProps) {
     messages,
     addMessage,
     clearConversation,
+    restoreMessages,
     getConversationHistory,
   };
 

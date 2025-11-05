@@ -19,6 +19,7 @@ export interface ChatRequest {
   message: string;
   conversationHistory: Message[];
   problemContext?: string;
+  recentlyMasteredSkills?: string[]; // Skills just mastered (for return context)
 }
 
 export interface ChatResponse {
@@ -68,6 +69,10 @@ function validateRequest(body: unknown): { valid: boolean; error?: string } {
     return { valid: false, error: 'problemContext must be a string if provided.' };
   }
 
+  if (req.recentlyMasteredSkills !== undefined && !Array.isArray(req.recentlyMasteredSkills)) {
+    return { valid: false, error: 'recentlyMasteredSkills must be an array if provided.' };
+  }
+
   return { valid: true };
 }
 
@@ -83,16 +88,18 @@ function buildMessagesArray(
   conversationHistory: Message[],
   problemContext?: string,
   useStricterPrompt = false,
-  violationType?: string
+  violationType?: string,
+  recentlyMasteredSkills?: string[]
 ): Array<{ role: 'system' | 'user' | 'assistant'; content: string }> {
   const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
 
-  // Analyze stuck level based on conversation history
-  // We analyze the history BEFORE adding the new message to see the pattern
+  // Analyze stuck level for hint adjustment (NOT for branching decisions)
+  // Note: Skill branching decisions are now handled by AI in /api/sessions/analyze-branching
+  // This stuck detection is only used to adjust hint verbosity in tutoring responses
   const stuckLevel = analyzeStuckLevel(conversationHistory);
 
   // Log stuck level for debugging (server-side only, not sent to client)
-  console.log(`[Stuck Detection] ${describeStuckLevel(stuckLevel)} (Level: ${stuckLevel})`);
+  console.log(`[Hint Level Detection] ${describeStuckLevel(stuckLevel)} (Level: ${stuckLevel})`);
 
   // Detect problem complexity for language adaptation
   // Use problem context if available, otherwise use current message
@@ -125,11 +132,40 @@ function buildMessagesArray(
     if (languageGuidance) {
       systemMessage += languageGuidance;
     }
+
+    // Add diagnostic flow guidance for stuck students
+    if (stuckLevel >= 2) {
+      systemMessage += `\n\nDIAGNOSTIC FLOW GUIDANCE:
+The student appears to be stuck. If they demonstrate a gap in prerequisite knowledge:
+1. Acknowledge their difficulty without judgment
+2. Ask if they would like to practice a specific prerequisite skill first
+3. Suggest: "Would you like to practice [skill name]? We can work on some simpler problems to build confidence."
+4. If they say "I'm not sure", "I don't know", or give an incorrect approach that shows a clear skill gap, recommend focused practice
+5. Be specific about which skill would help (e.g., "Let's practice one-step equations first")
+
+Remember: Only recommend practice if there's a CLEAR gap in prerequisite knowledge. Don't branch unnecessarily.`;
+    }
   }
 
   // Add problem context if provided
   if (problemContext) {
     systemMessage += `\n\nCURRENT PROBLEM CONTEXT:\n${problemContext}\n\nRemember: Guide the student to solve this problem themselves. Do not solve it for them.`;
+  }
+
+  // Add return context if student just mastered skills
+  if (recentlyMasteredSkills && recentlyMasteredSkills.length > 0) {
+    const skillsList = recentlyMasteredSkills.join(', ');
+    systemMessage += `\n\nRETURN CONTEXT - RECENTLY MASTERED SKILLS:
+The student just completed practice sessions and mastered the following skill(s): ${skillsList}
+
+IMPORTANT INSTRUCTIONS:
+1. Reference this newly acquired knowledge when helping with the main problem
+2. Build on their success: "Now that you understand ${recentlyMasteredSkills[0]}, let's use that skill here..."
+3. Connect the practiced skill to the current problem explicitly
+4. Acknowledge their progress and celebrate the connection
+5. Guide them to apply what they just learned
+
+Example: "Great job mastering ${recentlyMasteredSkills[0]}! Now you can use that to tackle this step..."`;
   }
 
   messages.push({ role: 'system', content: systemMessage });
@@ -298,7 +334,10 @@ export async function POST(request: NextRequest) {
     let messages = buildMessagesArray(
       body.message,
       body.conversationHistory,
-      body.problemContext
+      body.problemContext,
+      false, // useStricterPrompt
+      undefined, // violationType
+      body.recentlyMasteredSkills
     );
 
     // Call OpenAI API with retry logic
@@ -332,7 +371,8 @@ export async function POST(request: NextRequest) {
         body.conversationHistory,
         body.problemContext,
         true, // useStricterPrompt
-        responseValidation.violationType
+        responseValidation.violationType,
+        body.recentlyMasteredSkills
       );
 
       // Regenerate

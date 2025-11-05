@@ -4,6 +4,7 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 import { ConversationProvider } from "@/contexts/ConversationContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SessionProvider } from "@/contexts/SessionContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,11 +39,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <ConversationProvider>
-            <div className="flex min-h-screen flex-col">
-              {children}
-            </div>
-          </ConversationProvider>
+          <SessionProvider>
+            <ConversationProvider>
+              <div className="flex min-h-screen flex-col">
+                {children}
+              </div>
+            </ConversationProvider>
+          </SessionProvider>
         </AuthProvider>
       </body>
     </html>

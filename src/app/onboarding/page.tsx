@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
+import { removeUndefined } from '@/lib/firestore-helpers';
 import { db } from '@/lib/firebase';
 
 const GRADE_LEVELS = [
@@ -156,12 +157,12 @@ export default function OnboardingPage() {
 
     try {
       const userRef = doc(db, 'users', userProfile.uid);
-      await updateDoc(userRef, {
+      await updateDoc(userRef, removeUndefined({
         displayName: displayName.trim(),
         gradeLevel,
         focusTopics,
         interests,
-      });
+      }));
 
       await refreshUserProfile();
       router.push('/');
