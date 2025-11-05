@@ -64,6 +64,17 @@ export default function Home() {
 
   const { addMessage, getConversationHistory, restoreMessages } = useConversation();
 
+  // Inline resume prompt suppression for this tab
+  const [suppressResumePrompt, setSuppressResumePrompt] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const val = window.sessionStorage.getItem('suppressResumePrompt');
+      setSuppressResumePrompt(val === '1');
+    } catch {}
+  }, []);
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !user) {
@@ -167,6 +178,11 @@ export default function Home() {
       });
 
       // Redirect to per-session page
+      try {
+        if (typeof window !== 'undefined') {
+          window.sessionStorage.setItem('suppressResumePrompt', '1');
+        }
+      } catch {}
       router.push(`/sessions/${newSession.sessionId}`);
     } catch (err) {
       console.error('Error creating session:', err);
@@ -419,6 +435,64 @@ export default function Home() {
     if (!session || session.currentScreen === 'entry') {
       return (
         <div className="flex flex-col items-center justify-center space-y-8 text-center py-12">
+          {/* Inline Resume Previous Session (non-blocking) */}
+          {recoverableSession && !suppressResumePrompt && (
+            <div className="w-full max-w-2xl rounded-lg border border-blue-200 bg-blue-50 p-6 text-left dark:border-blue-800 dark:bg-blue-950/30">
+              <h2 className="mb-2 text-lg font-semibold text-blue-900 dark:text-blue-100">Resume Previous Session?</h2>
+              <div className="rounded-md bg-white p-4 mb-4 border border-blue-200 dark:bg-zinc-900 dark:border-blue-800">
+                <p className="font-medium text-blue-900 dark:text-blue-100">
+                  {recoverableSession.mainProblem.latex ? (
+                    <MathDisplay latex={recoverableSession.mainProblem.latex} displayMode={false} />
+                  ) : (
+                    recoverableSession.mainProblem.text
+                  )}
+                </p>
+                {recoverableSession.skillStack.length > 0 && (
+                  <p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                    Currently practicing: {recoverableSession.skillStack[recoverableSession.skillStack.length - 1].skillName}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={async () => {
+                    try {
+                      await resumeSession();
+                      if (recoverableSession?.messages) {
+                        restoreMessages(recoverableSession.messages);
+                      }
+                      router.push(`/sessions/${recoverableSession.sessionId}`);
+                    } catch (err) {
+                      console.error('Error resuming session:', err);
+                    }
+                  }}
+                  className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600"
+                >
+                  Continue Session
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await declineSession();
+                    } catch (err) {
+                      console.error('Error declining session:', err);
+                    } finally {
+                      try {
+                        if (typeof window !== 'undefined') {
+                          window.sessionStorage.setItem('suppressResumePrompt', '1');
+                        }
+                      } catch {}
+                      setSuppressResumePrompt(true);
+                    }
+                  }}
+                  className="flex-1 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-750"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-4">
             <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               Welcome to Math Tutor
@@ -663,76 +737,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Session Recovery Modal */}
-      {recoverableSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-zinc-900">
-            <h2 className="mb-4 text-xl font-bold text-zinc-900 dark:text-zinc-50">
-              Resume Previous Session?
-            </h2>
-            <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-400">
-              You have an active tutoring session:
-            </p>
-            <div className="mb-6 rounded-md bg-blue-50 p-4 dark:bg-blue-950">
-              <p className="font-medium text-blue-900 dark:text-blue-100">
-                {recoverableSession.mainProblem.latex ? (
-                  <MathDisplay latex={recoverableSession.mainProblem.latex} displayMode={false} />
-                ) : (
-                  recoverableSession.mainProblem.text
-                )}
-              </p>
-              {recoverableSession.skillStack.length > 0 && (
-                <p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                  Currently practicing: {recoverableSession.skillStack[recoverableSession.skillStack.length - 1].skillName}
-                </p>
-              )}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={async () => {
-                  try {
-                    console.log('🔁 Resuming session:', {
-                      sessionId: recoverableSession?.sessionId,
-                      messageCount: recoverableSession?.messages?.length || 0,
-                      messages: recoverableSession?.messages,
-                    });
-
-                    await resumeSession();
-
-                    // Restore messages from session to conversation context
-                    if (recoverableSession?.messages) {
-                      console.log('📥 Restoring messages to ConversationContext:', {
-                        count: recoverableSession.messages.length,
-                        messages: recoverableSession.messages,
-                      });
-                      restoreMessages(recoverableSession.messages);
-                    } else {
-                      console.warn('⚠️ No messages to restore - session.messages is empty or undefined');
-                    }
-                  } catch (err) {
-                    console.error('Error resuming session:', err);
-                  }
-                }}
-                className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600"
-              >
-                Continue Session
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    await declineSession();
-                  } catch (err) {
-                    console.error('Error declining session:', err);
-                  }
-                }}
-                className="flex-1 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-750"
-              >
-                Start New
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Inline card replaces previous modal */}
     </div>
   );
 }
