@@ -134,6 +134,8 @@ export interface SessionContextType extends SessionContextState {
   ) => Promise<TutoringSession>;
   loadSession: (sessionId: string) => Promise<TutoringSession>;
   endSession: () => Promise<void>;
+  // Pause current session and clear it from context (keeps it resumable)
+  pauseAndClearSession: () => Promise<void>;
 
   // Session recovery
   resumeSession: () => Promise<void>;

@@ -42,8 +42,15 @@ export default function NewProblemButton({ onReset, className }: NewProblemButto
   };
 
   const handleConfirm = () => {
-    // Clear conversation history
+    // Clear conversation history (UI only, session is persisted)
     clearConversation();
+
+    // Suppress inline resume prompt for this tab after choosing New Problem
+    try {
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('suppressResumePrompt', '1');
+      }
+    } catch {}
 
     // Call optional parent reset callback
     if (onReset) {
@@ -100,8 +107,8 @@ export default function NewProblemButton({ onReset, className }: NewProblemButto
 
             {/* Modal Message */}
             <p className="mb-6 text-zinc-600 dark:text-zinc-400">
-              Current progress will be lost. This will clear your conversation history and reset
-              the session.
+              This will start a new problem. Your current session is saved and can be resumed later.
+              The chat on this screen will be cleared for the new problem.
             </p>
 
             {/* Modal Actions */}

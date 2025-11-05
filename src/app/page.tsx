@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, limit, orderBy, query, where, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from '@/contexts/SessionContext';
@@ -74,6 +74,55 @@ export default function Home() {
       setSuppressResumePrompt(val === '1');
     } catch {}
   }, []);
+
+  // Past sessions list
+  interface SessionListItem {
+    sessionId: string;
+    mainProblem: { text: string; latex?: string };
+    lastMessageAt?: Date;
+    status?: string;
+  }
+
+  const [pastSessions, setPastSessions] = useState<SessionListItem[]>([]);
+  const [isLoadingPast, setIsLoadingPast] = useState<boolean>(false);
+  const [pastError, setPastError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPast = async () => {
+      if (loading) return;
+      if (!user) return;
+      setIsLoadingPast(true);
+      setPastError(null);
+      try {
+        const q = query(
+          collection(db, 'sessions'),
+          where('userId', '==', user.uid),
+          orderBy('lastMessageAt', 'desc'),
+          limit(10)
+        );
+        const snapshot = await getDocs(q);
+        const items: SessionListItem[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data() as any;
+          return {
+            sessionId: data.sessionId || docSnap.id,
+            mainProblem: {
+              text: data?.mainProblem?.text || 'Untitled problem',
+              latex: data?.mainProblem?.latex,
+            },
+            lastMessageAt: data?.lastMessageAt?.toDate?.() || (data?.lastMessageAt ? new Date(data.lastMessageAt) : undefined),
+            status: data?.status,
+          };
+        });
+        setPastSessions(items);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to load sessions';
+        setPastError(message);
+      } finally {
+        setIsLoadingPast(false);
+      }
+    };
+    fetchPast();
+  }, [loading, user]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -557,6 +606,105 @@ export default function Home() {
               <div className="mt-4 flex justify-center">
                 <LoadingIndicator showTimeout={false} />
               </div>
+            )}
+          </div>
+
+          {/* Past Sessions List */}
+          <div className="w-full max-w-2xl text-left">
+            <div className="mt-10 mb-3 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Past Sessions</h3>
+              <button
+                onClick={async () => {
+                  // Manual refresh
+                  try {
+                    if (!user) return;
+                    setIsLoadingPast(true);
+                    const q = query(
+                      collection(db, 'sessions'),
+                      where('userId', '==', user.uid),
+                      orderBy('lastMessageAt', 'desc'),
+                      limit(10)
+                    );
+                    const snapshot = await getDocs(q);
+                    const items: SessionListItem[] = snapshot.docs.map((docSnap) => {
+                      const data = docSnap.data() as any;
+                      return {
+                        sessionId: data.sessionId || docSnap.id,
+                        mainProblem: { text: data?.mainProblem?.text || 'Untitled problem', latex: data?.mainProblem?.latex },
+                        lastMessageAt: data?.lastMessageAt?.toDate?.() || (data?.lastMessageAt ? new Date(data.lastMessageAt) : undefined),
+                        status: data?.status,
+                      };
+                    });
+                    setPastSessions(items);
+                  } finally {
+                    setIsLoadingPast(false);
+                  }
+                }}
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                Refresh
+              </button>
+            </div>
+
+            {pastError && (
+              <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+                {pastError}
+              </div>
+            )}
+
+            {isLoadingPast ? (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center dark:border-zinc-800 dark:bg-zinc-950">
+                <LoadingIndicator showTimeout={false} />
+              </div>
+            ) : pastSessions.length === 0 ? (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+                No past sessions yet.
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {pastSessions.map((s) => (
+                  <li key={s.sessionId} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="text-zinc-900 dark:text-zinc-50">
+                          {s.mainProblem.latex ? (
+                            <MathDisplay latex={s.mainProblem.latex} displayMode={false} />
+                          ) : (
+                            s.mainProblem.text
+                          )}
+                        </div>
+                        <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                          {s.status ? `Status: ${s.status}` : ''}
+                          {s.lastMessageAt ? `  ·  ${new Date(s.lastMessageAt).toLocaleString()}` : ''}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => router.push(`/sessions/${s.sessionId}`)}
+                          className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                          Open
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const ok = window.confirm('Delete this session from history? This cannot be undone.');
+                              if (!ok) return;
+                              await deleteDoc(doc(db, 'sessions', s.sessionId));
+                              setPastSessions((prev) => prev.filter((it) => it.sessionId !== s.sessionId));
+                            } catch (err) {
+                              setPastError(err instanceof Error ? err.message : 'Failed to delete session');
+                            }
+                          }}
+                          className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>

@@ -34,6 +34,7 @@ export default function SessionPage() {
     returnToParent,
     addMessageToSession,
     branchToSkill,
+    pauseAndClearSession,
   } = useSession();
   const { addMessage, getConversationHistory, restoreMessages } = useConversation();
 
@@ -409,7 +410,15 @@ export default function SessionPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <Header onReset={() => router.push('/')} />
+      <Header
+        onReset={async () => {
+          try {
+            await pauseAndClearSession();
+          } finally {
+            router.push('/');
+          }
+        }}
+      />
       {session && session.currentScreen !== 'entry' && <ProgressHeaderContainer />}
       <main className="flex-1 bg-zinc-50 dark:bg-black flex flex-col overflow-hidden">
         <div className="mx-auto max-w-7xl w-full px-6 flex-1 flex flex-col overflow-hidden">

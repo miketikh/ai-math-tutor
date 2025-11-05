@@ -820,6 +820,22 @@ export function SessionProvider({ children }: SessionProviderProps) {
     createSession,
     loadSession,
     endSession,
+    pauseAndClearSession: async () => {
+      const current = sessionRef.current;
+      if (!current) return;
+      try {
+        const sessionDbRef = doc(db, 'sessions', current.sessionId);
+        await updateDoc(sessionDbRef, {
+          status: 'paused',
+          lastMessageAt: serverTimestamp(),
+          messages: current.messages,
+        });
+      } catch (err) {
+        console.error('Error pausing session:', err);
+      } finally {
+        setSession(null);
+      }
+    },
     resumeSession,
     declineSession,
     branchToSkill,
