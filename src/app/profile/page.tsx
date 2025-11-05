@@ -56,6 +56,12 @@ export default function ProfilePage() {
           </div>
           <div className="flex gap-4">
             <Link
+              href="/profile/skills"
+              className="inline-flex items-center px-4 py-2 border border-purple-300 dark:border-purple-700 rounded-md shadow-sm text-sm font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30"
+            >
+              View Skills Graph
+            </Link>
+            <Link
               href="/dashboard"
               className="inline-flex items-center px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800"
             >
