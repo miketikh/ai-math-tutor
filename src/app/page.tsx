@@ -165,6 +165,9 @@ export default function Home() {
         messageCount: newSession.messages.length,
         mainSkillId: newSession.mainSkillId || 'none',
       });
+
+      // Redirect to per-session page
+      router.push(`/sessions/${newSession.sessionId}`);
     } catch (err) {
       console.error('Error creating session:', err);
       addMessage('assistant', 'Sorry, I encountered an error creating your session. Please try again.');

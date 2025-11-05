@@ -51,6 +51,13 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   // Debounce timer for auto-save
   const saveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  // Ref to always hold the latest session snapshot to avoid stale-closure races
+  const sessionRef = React.useRef<TutoringSession | null>(null);
+
+  // Keep sessionRef in sync with state
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   /**
    * Convert Firestore data to TutoringSession
@@ -588,19 +595,20 @@ export function SessionProvider({ children }: SessionProviderProps) {
    */
   const addMessageToSession = useCallback(
     async (message: Message) => {
-      if (!session) {
+      const current = sessionRef.current;
+      if (!current) {
         throw new Error('No active session');
       }
 
       try {
         const updatedSession = {
-          ...session,
-          messages: [...session.messages, message],
+          ...current,
+          messages: [...current.messages, message],
         };
 
         console.log('➕ Adding message to session:', {
-          sessionId: session.sessionId,
-          currentMessageCount: session.messages.length,
+          sessionId: current.sessionId,
+          currentMessageCount: current.messages.length,
           newMessageCount: updatedSession.messages.length,
           newMessage: {
             role: message.role,
@@ -611,6 +619,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
         // ✅ FIX: Use immediate save for messages (no debounce)
         // Messages are critical data and should persist immediately
         await saveSessionToFirestore(updatedSession, false);
+        // Update both ref and state immediately to prevent race overwrites
+        sessionRef.current = updatedSession;
         setSession(updatedSession);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to add message';
@@ -618,7 +628,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         throw err;
       }
     },
-    [session]
+    []
   );
 
   /**

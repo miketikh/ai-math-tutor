@@ -126,7 +126,12 @@ export interface SessionContextState {
  */
 export interface SessionContextType extends SessionContextState {
   // Session lifecycle
-  createSession: (problemText: string, problemLatex?: string, initialMessage?: string) => Promise<TutoringSession>;
+  createSession: (
+    problemText: string,
+    problemLatex?: string,
+    initialMessage?: string,
+    mainSkillId?: string
+  ) => Promise<TutoringSession>;
   loadSession: (sessionId: string) => Promise<TutoringSession>;
   endSession: () => Promise<void>;
 
