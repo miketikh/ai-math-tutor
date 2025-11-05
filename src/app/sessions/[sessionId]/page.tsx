@@ -10,10 +10,11 @@ import ChatMessageList from '@/components/ChatMessageList';
 import ChatInput from '@/components/ChatInput';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import MathDisplay from '@/components/MathDisplay';
-import { ProgressHeaderContainer } from '@/components/tutoring/ProgressHeader';
+// ProgressHeader removed from chat pages in favor of right-side panel
 import SkillFork from '@/components/tutoring/SkillFork';
 import PracticeProblem from '@/components/tutoring/PracticeProblem';
 import SkillMastered from '@/components/tutoring/SkillMastered';
+import PracticeSidePanel from '@/components/tutoring/PracticeSidePanel';
 
 export default function SessionPage() {
   const router = useRouter();
@@ -286,76 +287,93 @@ export default function SessionPage() {
 
     if (session.currentScreen === 'diagnosis') {
       return (
-        <div className="flex flex-col gap-6 flex-1 py-6 overflow-hidden min-h-0">
-          <div className="w-full rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950 flex-shrink-0">
-            <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mb-2">Current Problem</h3>
-            <div className="text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
-              {session.mainProblem.latex ? (
-                <MathDisplay latex={session.mainProblem.latex} displayMode={false} />
-              ) : (
-                session.mainProblem.text
-              )}
+        <div className="flex-1 py-6 overflow-hidden min-h-0 flex gap-6">
+          {/* Left column: Current Problem + Chat */}
+          <div className="flex-1 min-w-0 flex flex-col gap-6">
+            {/* Mobile quick access to practice */}
+            <div className="md:hidden">
+              <button
+                onClick={() => {
+                  const url = sessionId && session?.mainSkillId
+                    ? `/skills/${session.mainSkillId}?sessionId=${encodeURIComponent(sessionId)}`
+                    : session?.mainSkillId
+                      ? `/skills/${session.mainSkillId}`
+                      : '/profile/skills';
+                  router.push(url);
+                }}
+                className="mb-2 inline-flex items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+              >
+                Practice related skills
+              </button>
             </div>
-          </div>
+            <div className="w-full rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950 flex-shrink-0">
+              <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mb-2">Current Problem</h3>
+              <div className="text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap">
+                {session.mainProblem.latex ? (
+                  <MathDisplay latex={session.mainProblem.latex} displayMode={false} />
+                ) : (
+                  session.mainProblem.text
+                )}
+              </div>
+            </div>
 
-          <div className="w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 flex flex-col flex-1 min-h-0 overflow-hidden">
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <ChatMessageList showTimestamps={false} className="min-h-0" />
-              {isLoading && (
-                <div className="px-4 pb-2">
-                  <LoadingIndicator showTimeout={true} />
-                </div>
-              )}
+            <div className="w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <ChatMessageList showTimestamps={false} className="min-h-0" />
+                {isLoading && (
+                  <div className="px-4 pb-2">
+                    <LoadingIndicator showTimeout={true} />
+                  </div>
+                )}
+              </div>
+              <div className="flex-shrink-0">
+                <ChatInput
+                  onSend={handleSendMessage}
+                  disabled={isLoading}
+                  placeholder={isLoading ? 'Waiting for AI response...' : 'Type your message... (Enter to send, Shift+Enter for new line)'}
+                />
+              </div>
             </div>
-            <div className="flex-shrink-0">
-              <ChatInput
-                onSend={handleSendMessage}
-                disabled={isLoading}
-                placeholder={isLoading ? 'Waiting for AI response...' : 'Type your message... (Enter to send, Shift+Enter for new line)'}
-              />
-            </div>
-          </div>
 
-          {recommendedSkill && (
-            <div className="w-full rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-950/30 flex-shrink-0">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 text-3xl">💡</div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">I notice you might benefit from practicing:</h3>
-                  <p className="text-xl font-bold text-blue-800 dark:text-blue-200 mb-2">{recommendedSkill.skillName}</p>
-                  {recommendedSkill.skillDescription && (
-                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">{recommendedSkill.skillDescription}</p>
-                  )}
-                  <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">{recommendedSkill.reason}</p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={async () => {
-                        try {
-                          await branchToSkill(
-                            recommendedSkill.skillId,
-                            recommendedSkill.skillName,
-                            recommendedSkill.skillDescription
-                          );
-                        } catch {
-                          // ignore
-                        }
-                        setRecommendedSkill(null);
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                      Practice This Skill
-                    </button>
-                    <button
-                      onClick={() => setRecommendedSkill(null)}
-                      className="bg-white hover:bg-gray-50 text-gray-700 font-medium px-6 py-2 rounded-md border border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600"
-                    >
-                      Keep Trying
-                    </button>
+            {recommendedSkill && (
+              <div className="w-full rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-950/30 flex-shrink-0">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 text-3xl">💡</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">I notice you might benefit from practicing:</h3>
+                    <p className="text-xl font-bold text-blue-800 dark:text-blue-200 mb-2">{recommendedSkill.skillName}</p>
+                    {recommendedSkill.skillDescription && (
+                      <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">{recommendedSkill.skillDescription}</p>
+                    )}
+                    <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">{recommendedSkill.reason}</p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          const url = sessionId
+                            ? `/skills/${recommendedSkill.skillId}?sessionId=${encodeURIComponent(sessionId)}`
+                            : `/skills/${recommendedSkill.skillId}`;
+                          setRecommendedSkill(null);
+                          router.push(url);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      >
+                        Practice This Skill
+                      </button>
+                      <button
+                        onClick={() => setRecommendedSkill(null)}
+                        className="bg-white hover:bg-gray-50 text-gray-700 font-medium px-6 py-2 rounded-md border border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-600"
+                      >
+                        Keep Trying
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Right column: Practice Side Panel */}
+          <PracticeSidePanel />
         </div>
       );
     }
@@ -419,7 +437,6 @@ export default function SessionPage() {
           }
         }}
       />
-      {session && session.currentScreen !== 'entry' && <ProgressHeaderContainer />}
       <main className="flex-1 bg-zinc-50 dark:bg-black flex flex-col overflow-hidden">
         <div className="mx-auto max-w-7xl w-full px-6 flex-1 flex flex-col overflow-hidden">
           {renderMainContent()}
