@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc, collection, getDocs, limit, orderBy, query, where, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -19,6 +19,7 @@ import SkillFork from '@/components/tutoring/SkillFork';
 import PracticeProblem from '@/components/tutoring/PracticeProblem';
 import SkillMastered from '@/components/tutoring/SkillMastered';
 import PracticeSidePanel from '@/components/tutoring/PracticeSidePanel';
+import { getPrereqs } from '@/lib/clientSkillGraph';
 
 type InputMode = 'text' | 'image';
 
@@ -64,6 +65,16 @@ export default function Home() {
   const [recommendedSkill, setRecommendedSkill] = useState<RecommendedSkill | null>(null);
 
   const { addMessage, getConversationHistory, restoreMessages } = useConversation();
+
+  const relatedSkillsForMain = useMemo(() => {
+    if (!session?.mainSkillId) return [] as ReturnType<typeof getPrereqs>;
+    return getPrereqs(session.mainSkillId, 20);
+  }, [session?.mainSkillId]);
+
+  const relatedSkillPayload = useMemo(
+    () => relatedSkillsForMain.map(({ id, name }) => ({ id, name })),
+    [relatedSkillsForMain]
+  );
 
   // Inline resume prompt suppression for this tab
   const [suppressResumePrompt, setSuppressResumePrompt] = useState<boolean>(false);
@@ -291,6 +302,8 @@ export default function Home() {
           message,
           conversationHistory,
           problemContext: session?.mainProblem.text || '',
+          mainSkillId: session?.mainSkillId,
+          relatedSkills: relatedSkillPayload.length > 0 ? relatedSkillPayload : undefined,
         }),
       });
 
@@ -312,7 +325,7 @@ export default function Home() {
         });
 
         // AI-powered skill gap detection (replaces regex-based stuck detection)
-        if (session.currentScreen === 'diagnosis' && session.mainSkillId && user) {
+        if (session.mainSkillId && user) {
           try {
             // Get conversation history for AI analysis
             const conversationHistory = getConversationHistory();
@@ -326,6 +339,7 @@ export default function Home() {
                 mainProblem: session.mainProblem.text,
                 mainSkillId: session.mainSkillId,
                 userId: user.uid,
+                allowedRelatedSkills: relatedSkillPayload,
               }),
             });
 

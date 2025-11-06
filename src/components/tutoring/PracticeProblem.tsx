@@ -53,6 +53,8 @@ export default function PracticeProblem({
   const [showHint, setShowHint] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  
+
   // Auto-focus input on component mount and when feedback is cleared
   useEffect(() => {
     if (!feedback && inputRef.current) {

@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: 'Your only job: wrap math expressions in $ delimiters. Return the EXACT input text with ONLY math wrapped in $. Change nothing else.\n\nExamples:\nInput: "solve x^2 = 4"\nOutput: "solve $x^2 = 4$"\n\nInput: "I want x^2 + 5x = 6 for x"\nOutput: "I want $x^2 + 5x = 6$ for x"\n\nInput: "what is the answer"\nOutput: "what is the answer"',
+          content: 'Your only job: wrap math expressions in \\( \\) delimiters. Return the EXACT input text with ONLY math wrapped in \\( \\). Change nothing else. NEVER use $ for math (conflicts with currency).\n\nExamples:\nInput: "solve x^2 = 4"\nOutput: "solve \\(x^2 = 4\\)"\n\nInput: "I want x^2 + 5x = 6 for x"\nOutput: "I want \\(x^2 + 5x = 6\\) for x"\n\nInput: "what is the answer"\nOutput: "what is the answer"\n\nInput: "I made $5 and spent $3"\nOutput: "I made $5 and spent $3" (no math to format)',
         },
         {
           role: 'user',

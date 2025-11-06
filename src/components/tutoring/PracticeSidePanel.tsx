@@ -19,7 +19,7 @@ export default function PracticeSidePanel() {
   const mainSkillId = session?.mainSkillId;
 
   const mainSkill = useMemo(() => (mainSkillId ? getSkillInfo(mainSkillId) : null), [mainSkillId]);
-  const prereqs = useMemo(() => (mainSkillId ? getPrereqs(mainSkillId, 2) : []), [mainSkillId]);
+  const prereqs = useMemo(() => (mainSkillId ? getPrereqs(mainSkillId, 10) : []), [mainSkillId]);
 
   const getProficiency = (skillId?: string) => {
     if (!skillId) return undefined;
@@ -88,7 +88,7 @@ export default function PracticeSidePanel() {
             {prereqs.length > 0 && (
               <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4">
                 <div className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">Related skills</div>
-                <div className="space-y-3">
+                <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                   {prereqs.map((p) => {
                     const prof = getProficiency(p.id);
                     const badge = prof ? getProficiencyColor(prof.level) : null;

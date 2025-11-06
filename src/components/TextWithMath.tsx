@@ -7,7 +7,7 @@ import MathDisplay from './MathDisplay';
  * Props for the TextWithMath component
  */
 interface TextWithMathProps {
-  /** Text potentially containing LaTeX delimiters ($..$ inline, $$..$$ block) */
+  /** Text potentially containing LaTeX delimiters (\(...\) inline, $$...$$ block) */
   text: string;
   /** Optional: Additional CSS classes */
   className?: string;
@@ -26,7 +26,7 @@ interface ContentChunk {
  * TextWithMath Component
  *
  * Renders text with inline LaTeX math expressions.
- * Parses $...$ for inline math and $$...$$ for block math.
+ * Parses \(...\) for inline math and $$...$$ for block math.
  */
 export default function TextWithMath({ text, className = '' }: TextWithMathProps) {
   const contentChunks = useMemo(() => {
@@ -36,7 +36,7 @@ export default function TextWithMath({ text, className = '' }: TextWithMathProps
 
     while (remaining.length > 0) {
       const blockMatch = remaining.match(/\$\$([\s\S]*?)\$\$/);
-      const inlineMatch = remaining.match(/\$(.*?)\$/);
+      const inlineMatch = remaining.match(/\\\((.*?)\\\)/);
 
       let nextMatch: RegExpMatchArray | null = null;
       let matchType: 'block' | 'inline' | null = null;

@@ -156,6 +156,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     await signOut(auth);
     setUserProfile(null);
+    // Clear session data from localStorage to prevent showing old user's sessions
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('activeSessionId');
+    }
   };
 
   // Listen for auth state changes

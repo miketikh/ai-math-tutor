@@ -25,6 +25,7 @@ export default function ChatInterfaceTestPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [problemContext, setProblemContext] = useState('Solve for x: 2x + 5 = 13');
+  const [includeSampleSkills, setIncludeSampleSkills] = useState(true);
 
   /**
    * Handle sending a message
@@ -56,6 +57,16 @@ export default function ChatInterfaceTestPage() {
           message,
           conversationHistory,
           problemContext,
+          ...(includeSampleSkills
+            ? {
+                mainSkillId: 'algebra.multi_step_equations',
+                relatedSkills: [
+                  { id: 'algebra.variables', name: 'Variables' },
+                  { id: 'algebra.two_step_equations', name: 'Two-Step Equations' },
+                  { id: 'algebra.combining_like_terms', name: 'Combining Like Terms' },
+                ],
+              }
+            : {}),
         }),
       });
 
@@ -127,6 +138,18 @@ export default function ChatInterfaceTestPage() {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             This context helps the AI tutor understand what problem you're working on.
           </p>
+          <div className="mt-3 flex items-center gap-2">
+            <input
+              id="include-skills"
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              checked={includeSampleSkills}
+              onChange={(e) => setIncludeSampleSkills(e.target.checked)}
+            />
+            <label htmlFor="include-skills" className="text-sm text-gray-800 dark:text-gray-200">
+              Include sample skill context (main skill + 3 related skills)
+            </label>
+          </div>
         </div>
 
         {/* Error Display */}

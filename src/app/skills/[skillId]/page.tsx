@@ -9,7 +9,7 @@ import PracticeProblem from '@/components/tutoring/PracticeProblem';
 import SkillFork from '@/components/tutoring/SkillFork';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSkillInfo } from '@/lib/clientSkillGraph';
-import type { PracticeProblem as PracticeProblemType } from '@/types/session';
+import type { PracticeProblem as PracticeProblemType, ProblemAttempt } from '@/types/session';
 
 export default function SkillPracticePage() {
   const router = useRouter();
@@ -34,6 +34,7 @@ export default function SkillPracticePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ isCorrect: boolean; message: string } | null>(null);
   const [review, setReview] = useState<{ correct: number; total: number; proficiency?: { level: string; problemsSolved: number; successCount: number } | null } | null>(null);
+  const [attempts, setAttempts] = useState<ProblemAttempt[]>([]);
 
   // Redirect unauthenticated users
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function SkillPracticePage() {
       setProblems(data.problems);
       setIndex(0);
       setFeedback(null);
+      setAttempts([]);
       setMode('practice');
     } catch (err) {
       setPageError(err instanceof Error ? err.message : 'Failed to generate problems');
@@ -101,7 +103,10 @@ export default function SkillPracticePage() {
       });
       const data = await resp.json();
       const correct = Boolean(data.correct);
+      
       await recordAttempt(correct);
+      const attempt: ProblemAttempt = { problemIndex: index, answer, correct, timestamp: new Date() } as ProblemAttempt;
+      setAttempts(prev => [...prev, attempt]);
       setFeedback({ isCorrect: correct, message: String(data.feedback || (correct ? 'Nice work!' : 'Not quite—let’s try the next one.')) });
       setTimeout(() => {
         setFeedback(null);
@@ -110,7 +115,7 @@ export default function SkillPracticePage() {
           // For review: compute score by counting corrects from server would require attempts
           // We derive it naively from last correctness here: increment if correct
           const prior = review?.correct || 0;
-          const correctCount = prior + (feedback?.isCorrect ? 1 : 0);
+          const correctCount = prior + (correct ? 1 : 0);
           setIndex(nextIndex);
           setReview({ correct: correctCount, total: problems.length, proficiency: undefined });
           // Fetch proficiency snapshot
@@ -219,6 +224,7 @@ export default function SkillPracticePage() {
             skillName={skill?.name || 'Practice'}
             isSubmitting={isSubmitting}
             feedback={feedback}
+            attempts={attempts}
           />
         ) : null}
 

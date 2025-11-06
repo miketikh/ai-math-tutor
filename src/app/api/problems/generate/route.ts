@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { skillGraphManager } from '@/lib/skillGraph';
+import { getProficiency } from '@/lib/proficiencyTracker';
 import { adminDb } from '@/lib/firebaseAdmin';
 
 /**
@@ -118,44 +119,71 @@ async function generateProblemsWithAI(
   skillDescription: string,
   count: number,
   gradeLevel: string,
-  interests: string[]
+  interests: string[],
+  proficiency: string
 ): Promise<GeneratedProblem[]> {
   const interestsText = interests.join(', ');
 
-  const prompt = `You are an expert math tutor creating practice problems for a student.
+  const prompt = `You are an expert math tutor creating a small, leveled practice set.
 
 Skill: ${skillName}
 Description: ${skillDescription}
-Target grade level: ${gradeLevel}
+Student grade: ${gradeLevel}
 Student interests: ${interestsText}
+Student proficiency in this skill: ${proficiency}
 
-Generate ${count} practice problems for this skill. Each problem should:
-1. Be appropriate for the specified grade level
-2. Progressively increase in difficulty (first problem easiest, last problem hardest)
-3. When possible, incorporate the student's interests to make the problem more engaging
-4. Include a clear problem statement, a helpful hint, and a complete solution with step-by-step explanation
+Goal
+- Generate ${count} problems that gently increase in complexity and stay aligned to the student’s grade and proficiency.
 
-Return ONLY a JSON array with exactly ${count} problems in this format:
-[
-  {
-    "text": "The problem statement",
-    "hint": "A helpful hint that guides without giving away the answer",
-    "solution": "The complete answer with step-by-step explanation"
-  }
-]
+Progression concept
+- Start with the core idea, then a single-step procedure, then a simple applied context.
+- If proficiency is unknown, begin at the most basic recognition/procedure level using small integers and denominators ≤ 12.
+- Keep numbers simple; for unknown/learning avoid multi-step reasoning.
 
-Math formatting: Use $ for inline math (e.g., $x + 5 = 12$, $\\frac{1}{2}$) and $$ for display equations.`;
+Each problem must include
+- text: concise statement (≤2 sentences), using relatable context when natural for the given interests
+- hint: one short scaffold with
+  - Concept label (what idea to recall)
+  - Leading question
+  - One micro-step (no final result)
+- solution: clear, step-by-step resolution
+- difficulty: easy | medium | hard
+- subskill: read_fractions | compare_fractions | multiply_fraction_by_whole | add_fractions | subtract_fractions
+
+Keep it concise
+- Each hint ≤ 1 sentence; each solution ≤ 3 short steps.
+
+Math format
+- Wrap inline math with \\(...\\) and display math with $$...$$
+- In JSON strings, backslashes MUST be double-escaped: write \\(\\frac{1}{2}\\), \\(15\\div 3\\), \\(2\\times 5\\)
+- NEVER use single $ for inline math (conflicts with currency)
+
+Output
+- Return ONLY a JSON object with a single field "problems": an array with exactly ${count} objects, each with fields: text, hint, solution, difficulty, subskill.
+
+Example (structure)
+{
+  "problems": [
+    {
+      "text": "A player hits \\(\\frac{2}{3}\\) of 15 pitches. How many hits?",
+      "hint": "Concept: fraction of a whole. Question: What is one-third of 15? Step: compute \\(15\\div 3\\) then multiply by 2.",
+      "solution": "Compute \\(15\\div 3 = 5\\), then \\(2\\times 5 = 10\\).",
+      "difficulty": "easy",
+      "subskill": "multiply_fraction_by_whole"
+    }
+  ]
+}`;
 
   console.log(`[Generate Problems] Calling GPT-4 to generate ${count} problems for skill: ${skillName}`);
 
   try {
     const completion = await Promise.race([
       openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-mini',
         messages: [
           {
             role: 'system',
-            content: 'You are an expert math tutor who generates practice problems in JSON format. Always return valid JSON arrays only. Format all math with $ delimiters.',
+            content: 'You are an expert math tutor who generates practice problems in JSON format. Always return a valid JSON object with a "problems" array. Format inline math with \\( \\) delimiters and display math with $$ delimiters.',
           },
           {
             role: 'user',
@@ -163,7 +191,7 @@ Math formatting: Use $ for inline math (e.g., $x + 5 = 12$, $\\frac{1}{2}$) and 
           },
         ],
         temperature: 0.7, // Some creativity for variety, but not too random
-        // Note: Not using response_format to allow array responses (we handle parsing manually)
+        response_format: { type: 'json_object' },
       }),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('OpenAI request timeout')), TIMEOUT_MS)
@@ -176,20 +204,18 @@ Math formatting: Use $ for inline math (e.g., $x + 5 = 12$, $\\frac{1}{2}$) and 
       throw new Error('Empty response from OpenAI');
     }
 
-    // Parse JSON response
+    // Parse JSON response (JSON mode ensures valid JSON)
     let parsed: any;
     try {
       parsed = JSON.parse(responseText);
     } catch (parseError) {
-      console.error('[Generate Problems] Failed to parse OpenAI response as JSON:', responseText);
+      console.error('[Generate Problems] Failed to parse OpenAI response as JSON');
       throw new Error('Invalid JSON response from AI');
     }
 
     // Handle different response formats (some models return nested structure)
     let problems: GeneratedProblem[];
-    if (Array.isArray(parsed)) {
-      problems = parsed;
-    } else if (parsed.problems && Array.isArray(parsed.problems)) {
+    if (parsed.problems && Array.isArray(parsed.problems)) {
       problems = parsed.problems;
     } else if (parsed.data && Array.isArray(parsed.data)) {
       problems = parsed.data;
@@ -278,7 +304,16 @@ export async function POST(request: NextRequest) {
       skill.description,
       count,
       userProfile.gradeLevel,
-      userProfile.interests
+      userProfile.interests,
+      // proficiency string
+      (await (async () => {
+        try {
+          const p = await getProficiency(userId, skillId);
+          return p?.level || 'unknown';
+        } catch {
+          return 'unknown';
+        }
+      })())
     );
 
     const response: GenerateProblemsResponse = {

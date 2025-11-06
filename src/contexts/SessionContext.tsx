@@ -379,6 +379,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
           correct,
           timestamp: new Date(),
         });
+        
 
         // Update success count
         if (correct) {
@@ -736,6 +737,14 @@ export function SessionProvider({ children }: SessionProviderProps) {
       const activeSessionId = localStorage.getItem('activeSessionId');
 
       if (!activeSessionId) return;
+
+      // Defensive check: ensure session ID belongs to current user
+      // Session IDs have format: session_{userId}_{timestamp}
+      if (!activeSessionId.includes(user.uid)) {
+        console.log('Clearing activeSessionId from different user:', activeSessionId);
+        localStorage.removeItem('activeSessionId');
+        return;
+      }
 
       try {
         const sessionRef = doc(db, 'sessions', activeSessionId);

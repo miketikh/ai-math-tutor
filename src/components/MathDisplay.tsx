@@ -8,7 +8,7 @@ import 'katex/dist/katex.min.css';
  * Props for the MathDisplay component
  */
 interface MathDisplayProps {
-  /** LaTeX string to render. Can include delimiters: $ for inline, $$ for block */
+  /** LaTeX string to render. Can include delimiters: \( \) for inline, $$ for block */
   latex: string;
   /** Optional: Force display mode. If not provided, auto-detects from delimiters */
   displayMode?: boolean;
@@ -24,14 +24,14 @@ interface MathDisplayProps {
  * Renders LaTeX equations using KaTeX library.
  *
  * Features:
- * - Supports inline mode ($ delimiter) and block mode ($$ delimiter)
+ * - Supports inline mode (\( \) delimiter) and block mode ($$ delimiter)
  * - Auto-detects mode from delimiters if displayMode not explicitly set
  * - Error handling: shows raw text with error indicator for invalid LaTeX
  * - Memoized to prevent unnecessary re-renders
  * - Accessible: includes aria-label for screen readers
  *
  * Usage:
- * <MathDisplay latex="$x^2 + 5x + 6$" />  // inline
+ * <MathDisplay latex="\(x^2 + 5x + 6\)" />  // inline
  * <MathDisplay latex="$$\int x^2 dx$$" />  // block
  */
 const MathDisplay: React.FC<MathDisplayProps> = memo(({
@@ -54,7 +54,12 @@ const MathDisplay: React.FC<MathDisplayProps> = memo(({
         blockMode = true;
         processed = processed.slice(2, -2).trim();
       }
-      // Check for inline delimiters ($)
+      // Check for inline delimiters (\( \))
+      else if (processed.startsWith('\\(') && processed.endsWith('\\)')) {
+        blockMode = false;
+        processed = processed.slice(2, -2).trim();
+      }
+      // Legacy: Also support old $ delimiter (for backward compatibility)
       else if (processed.startsWith('$') && processed.endsWith('$')) {
         blockMode = false;
         processed = processed.slice(1, -1).trim();
@@ -62,6 +67,8 @@ const MathDisplay: React.FC<MathDisplayProps> = memo(({
     } else {
       // Remove delimiters if present
       if (processed.startsWith('$$') && processed.endsWith('$$')) {
+        processed = processed.slice(2, -2).trim();
+      } else if (processed.startsWith('\\(') && processed.endsWith('\\)')) {
         processed = processed.slice(2, -2).trim();
       } else if (processed.startsWith('$') && processed.endsWith('$')) {
         processed = processed.slice(1, -1).trim();

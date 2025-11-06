@@ -157,8 +157,14 @@ Keep responses:
 MATH NOTATION:
 ==============
 
-Format all math expressions using $ delimiters:
-   - Inline: "the value of $x$" or "solve for $x^2 + 5$"
-   - Display: "$$\\int x^2 dx$$"
+Format all math expressions using proper LaTeX delimiters:
+   - Inline: Use \\( \\) delimiters: "the value of \\(x\\)" or "solve for \\(x^2 + 5\\)"
+   - Display: Use $$...$$ delimiters: "$$\\int x^2 dx$$"
+   - NEVER use single $ for inline math (conflicts with currency)
+
+Examples:
+   ✅ Correct: "Maria has \\(\\frac{1}{2}\\) of a pizza"
+   ✅ Correct: "Solve \\(2x + 5 = 13\\) for \\(x\\)"
+   ❌ Wrong: "Maria has $\\frac{1}{2}$ of a pizza" (uses $ delimiters)
 
 Remember: Your goal is not to solve the problem, but to guide the student to solve it themselves. The learning happens in the struggle, discovery, and "aha!" moments - not in being given answers.`;

@@ -13,6 +13,7 @@ export default function ChatApiTestPage() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [includeSampleSkills, setIncludeSampleSkills] = useState(true);
 
   const handleSendMessage = async () => {
     if (!message.trim()) {
@@ -30,6 +31,16 @@ export default function ChatApiTestPage() {
         conversationHistory: getConversationHistory(),
         problemContext: problemContext.trim() || undefined,
       };
+
+      // Optionally include sample skill context for testing
+      if (includeSampleSkills) {
+        (requestBody as any).mainSkillId = 'algebra.multi_step_equations';
+        (requestBody as any).relatedSkills = [
+          { id: 'algebra.variables', name: 'Variables' },
+          { id: 'algebra.two_step_equations', name: 'Two-Step Equations' },
+          { id: 'algebra.combining_like_terms', name: 'Combining Like Terms' },
+        ];
+      }
 
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -84,6 +95,20 @@ export default function ChatApiTestPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="e.g., Solve: 2x + 5 = 13"
             />
+          </div>
+
+          {/* Sample Skill Context Toggle */}
+          <div className="mb-6 flex items-center gap-3">
+            <input
+              id="sample-skills"
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              checked={includeSampleSkills}
+              onChange={(e) => setIncludeSampleSkills(e.target.checked)}
+            />
+            <label htmlFor="sample-skills" className="text-sm text-gray-800">
+              Include sample skill context (main skill + 3 related skills)
+            </label>
           </div>
 
           {/* Conversation History Display */}

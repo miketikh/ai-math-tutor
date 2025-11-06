@@ -30,7 +30,7 @@ interface ContentChunk {
  * Displays a chat message with support for LaTeX rendering.
  *
  * Features:
- * - Parses message text to detect LaTeX delimiters ($..$ for inline, $$...$$ for block)
+ * - Parses message text to detect LaTeX delimiters (\(...\) for inline, $$...$$ for block)
  * - Renders text chunks as normal text
  * - Renders LaTeX chunks using MathDisplay component
  * - Handles mixed content (text + inline equations + block equations)
@@ -38,13 +38,13 @@ interface ContentChunk {
  * - Prevents layout shifts with proper spacing
  *
  * Usage:
- * <ChatMessage message="The answer is $x^2 + 5$" role="user" />
+ * <ChatMessage message="The answer is \(x^2 + 5\)" role="user" />
  * <ChatMessage message="Let's solve $$\int x^2 dx$$" role="assistant" />
  */
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, role, className = '' }) => {
   /**
    * Parse message into chunks of text and LaTeX
-   * Handles both inline ($...$) and block ($$...$$) equations
+   * Handles both inline (\(...\)) and block ($$...$$) equations
    */
   const contentChunks = useMemo(() => {
     const chunks: ContentChunk[] = [];
@@ -56,8 +56,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, role, className = ''
       // Note: Using [\s\S] instead of 's' flag for compatibility
       const blockMatch = remaining.match(/\$\$([\s\S]*?)\$\$/);
 
-      // Then look for inline equations ($...$)
-      const inlineMatch = remaining.match(/\$(.*?)\$/);
+      // Then look for inline equations (\(...\))
+      const inlineMatch = remaining.match(/\\\((.*?)\\\)/);
 
       // Determine which match comes first
       let nextMatch: RegExpMatchArray | null = null;

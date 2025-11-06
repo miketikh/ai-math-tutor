@@ -15,6 +15,7 @@ import SkillFork from '@/components/tutoring/SkillFork';
 import PracticeProblem from '@/components/tutoring/PracticeProblem';
 import SkillMastered from '@/components/tutoring/SkillMastered';
 import PracticeSidePanel from '@/components/tutoring/PracticeSidePanel';
+import { getPrereqs } from '@/lib/clientSkillGraph';
 
 export default function SessionPage() {
   const router = useRouter();
@@ -50,6 +51,16 @@ export default function SessionPage() {
     reason: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const relatedSkillsForMain = useMemo(() => {
+    if (!session?.mainSkillId) return [] as ReturnType<typeof getPrereqs>;
+    return getPrereqs(session.mainSkillId, 20);
+  }, [session?.mainSkillId]);
+
+  const relatedSkillPayload = useMemo(
+    () => relatedSkillsForMain.map(({ id, name }) => ({ id, name })),
+    [relatedSkillsForMain]
+  );
 
   // Redirect unauthenticated users
   useEffect(() => {
@@ -131,6 +142,13 @@ export default function SessionPage() {
             message,
             conversationHistory,
             problemContext: session?.mainProblem.text || '',
+            mainSkillId: session?.mainSkillId,
+            relatedSkills: relatedSkillPayload.length > 0 ? relatedSkillPayload : undefined,
+            studentProfile: {
+              gradeLevel: userProfile?.gradeLevel,
+              interests: userProfile?.interests,
+              focusTopics: userProfile?.focusTopics,
+            },
           }),
         });
         const data = await response.json();
@@ -142,33 +160,14 @@ export default function SessionPage() {
         if (session) {
           await addMessageToSession({ role: 'assistant', content: data.response, timestamp: Date.now() });
 
-          // Optional AI branching analysis (when on diagnosis and mainSkillId present)
-          if (session.currentScreen === 'diagnosis' && session.mainSkillId && user) {
-            try {
-              const branchingResponse = await fetch('/api/sessions/analyze-branching', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  conversationHistory: getConversationHistory(),
-                  mainProblem: session.mainProblem.text,
-                  mainSkillId: session.mainSkillId,
-                  userId: user.uid,
-                }),
-              });
-              if (branchingResponse.ok) {
-                const branchingData = await branchingResponse.json();
-                if (branchingData.shouldBranch && branchingData.weakSkillId) {
-                  setRecommendedSkill({
-                    skillId: branchingData.weakSkillId,
-                    skillName: branchingData.weakSkillName,
-                    skillDescription: branchingData.weakSkillDescription,
-                    reason: branchingData.reasoning,
-                  });
-                }
-              }
-            } catch {
-              // ignore branching errors
-            }
+          // Check if AI recommends practice (integrated into chat response)
+          if (data.needsPractice && data.practiceSkillId && data.practiceSkillName) {
+            setRecommendedSkill({
+              skillId: data.practiceSkillId,
+              skillName: data.practiceSkillName,
+              skillDescription: undefined,
+              reason: data.practiceReason || 'Practice recommended',
+            });
           }
         }
       } catch (err) {
@@ -178,7 +177,7 @@ export default function SessionPage() {
         setIsLoading(false);
       }
     },
-    [addMessage, addMessageToSession, getConversationHistory, session, user]
+    [addMessage, addMessageToSession, getConversationHistory, session, user, relatedSkillPayload, userProfile]
   );
 
   const handleStartPractice = useCallback(async () => {
@@ -208,6 +207,7 @@ export default function SessionPage() {
     async (answer: string) => {
       const currentBranch = getCurrentBranch();
       if (!currentBranch || !session) return;
+      
       setIsSubmittingAnswer(true);
       try {
         const response = await fetch('/api/sessions/submit-answer', {
@@ -220,6 +220,7 @@ export default function SessionPage() {
           }),
         });
         const data = await response.json();
+        
         if (!response.ok || !data.success) {
           throw new Error(data.error || 'Failed to validate answer');
         }
