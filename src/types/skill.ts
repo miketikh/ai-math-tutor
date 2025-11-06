@@ -20,6 +20,10 @@ export interface Skill {
   layer1: string[];
   layer2: string[];
   diagnostics: DiagnosticQuestions;
+  category?: string;
+  keywords?: string[];
+  common_mistakes?: string[];
+  keywords_map?: Record<string, string[]>;
 }
 
 /**
@@ -29,6 +33,8 @@ export interface SkillGraphMetadata {
   description: string;
   target_audience?: string;
   version: string;
+  total_skills?: number;
+  note?: string;
 }
 
 /**
@@ -39,8 +45,11 @@ export interface SkillGraph {
   skills: Record<string, Skill>;
   problem_to_skill_mapping?: {
     word_problems?: Record<string, string[]>;
+    equations?: Record<string, string[]>;
+    graphing?: Record<string, string[]>;
   };
   usage_guide?: Record<string, string>;
+  skill_categories?: Record<string, string[]>;
 }
 
 /**
