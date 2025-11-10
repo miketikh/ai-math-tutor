@@ -70,8 +70,8 @@ export default function Header({ onReset }: HeaderProps) {
             <Image
               src="/favicon/android-chrome-192x192.png"
               alt="MathFoundry Logo"
-              width={40}
-              height={40}
+              width={60}
+              height={60}
               className="rounded-lg"
             />
             <span className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">

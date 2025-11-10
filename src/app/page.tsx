@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { MessageCircle, Network, TrendingUp, CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function LandingPage() {
   return (
@@ -9,9 +10,18 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b border-zinc-200 bg-white/80 backdrop-blur-sm px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950/80">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            MathFoundry
-          </h1>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/favicon/android-chrome-192x192.png"
+              alt="MathFoundry Logo"
+              width={60}
+              height={60}
+              className="rounded-lg"
+            />
+            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+              MathFoundry
+            </h1>
+          </div>
           <Link href="/login">
             <Button variant="ghost">Sign In</Button>
           </Link>
