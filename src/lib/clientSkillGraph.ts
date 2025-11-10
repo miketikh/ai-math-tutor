@@ -30,6 +30,14 @@ export interface ClientSkillInfo {
 
 export interface PrereqInfo { id: string; name: string; description: string }
 
+export interface SkillTreeNode {
+  id: string;
+  name: string;
+  description: string;
+  depth: number;
+  children: SkillTreeNode[];
+}
+
 export function getSkillInfo(skillId: string): ClientSkillInfo | null {
   const skill = graph.skills?.[skillId];
   if (!skill) return null;
@@ -88,6 +96,58 @@ export function getPrereqs(skillId: string, limit = 6): PrereqInfo[] {
 export function listAllSkills(): PrereqInfo[] {
   if (!graph.skills) return [];
   return Object.entries(graph.skills).map(([id, s]) => ({ id, name: s.name, description: s.description }));
+}
+
+/**
+ * Get a hierarchical tree of skill dependencies
+ * @param skillId - The root skill to build the tree from
+ * @param maxDepth - Maximum depth to traverse (default 3)
+ * @returns Array of tree nodes representing direct dependencies (layer1)
+ */
+export function getSkillDependencyTree(skillId: string, maxDepth = 3): SkillTreeNode[] {
+  if (!graph.skills) return [];
+  const root = graph.skills[skillId];
+  if (!root) return [];
+
+  const buildNode = (id: string, currentDepth: number): SkillTreeNode | null => {
+    const skill = graph.skills[id];
+    if (!skill) return null;
+
+    const node: SkillTreeNode = {
+      id,
+      name: skill.name,
+      description: skill.description,
+      depth: currentDepth,
+      children: [],
+    };
+
+    // Recursively build children if we haven't hit max depth
+    if (currentDepth < maxDepth && skill.layer1 && skill.layer1.length > 0) {
+      for (const childId of skill.layer1) {
+        if (!childId) continue;
+        const childNode = buildNode(childId, currentDepth + 1);
+        if (childNode) {
+          node.children.push(childNode);
+        }
+      }
+    }
+
+    return node;
+  };
+
+  // Build tree nodes for each direct dependency (layer1)
+  const treeNodes: SkillTreeNode[] = [];
+  if (root.layer1) {
+    for (const depId of root.layer1) {
+      if (!depId) continue;
+      const node = buildNode(depId, 1);
+      if (node) {
+        treeNodes.push(node);
+      }
+    }
+  }
+
+  return treeNodes;
 }
 
 
