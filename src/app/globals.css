@@ -10,7 +10,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Custom theme colors for Math Tutor branding */
+  /* Custom theme colors for MathFoundry branding */
   --color-primary: #3b82f6; /* blue-500 - for primary actions */
   --color-primary-hover: #2563eb; /* blue-600 */
   --color-success: #10b981; /* green-500 - for correct answers */

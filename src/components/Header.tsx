@@ -39,7 +39,7 @@ export default function Header({ onReset }: HeaderProps) {
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           <Link href="/tutor" className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity">
-            Math Tutor
+            MathFoundry
           </Link>
 
           <div className="flex items-center gap-4">

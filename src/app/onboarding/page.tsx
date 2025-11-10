@@ -201,7 +201,7 @@ export default function OnboardingPage() {
             <div className="space-y-6">
               <div className="text-center space-y-2">
                 <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-                  Welcome to Math Tutor!
+                  Welcome to MathFoundry!
                 </h1>
                 <p className="text-lg text-zinc-600 dark:text-zinc-400">
                   Let's get to know you better

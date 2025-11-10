@@ -559,10 +559,10 @@ export default function Home() {
 
           <div className="space-y-4">
             <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Welcome to Math Tutor
+              Welcome to MathFoundry
             </h2>
             <p className="text-lg text-zinc-600 dark:text-zinc-400">
-              Your AI-powered Socratic learning assistant for mathematics
+              Your AI tutor that finds gaps in your foundation and builds real understanding
             </p>
           </div>
 

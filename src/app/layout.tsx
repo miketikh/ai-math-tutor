@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 
 // Metadata configuration for SEO and branding
 export const metadata: Metadata = {
-  title: "Math Tutor - AI-Powered Learning Assistant",
-  description: "An interactive AI-powered Socratic math tutor that helps you learn through guided questions and explanations.",
+  title: "MathFoundry - AI-Powered Math Learning",
+  description: "An AI tutor that finds gaps in your foundation, helps you fill them, and builds real understanding from the ground up.",
 };
 
 // Viewport configuration for responsive design

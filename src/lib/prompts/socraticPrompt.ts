@@ -1,5 +1,5 @@
 /**
- * Socratic System Prompt for Math Tutoring
+ * Socratic System Prompt for MathFoundry
  *
  * This prompt is the pedagogical heart of the system.
  * It enforces Socratic teaching methodology where the AI guides students
