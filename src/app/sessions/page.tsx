@@ -78,12 +78,12 @@ export default function SessionsIndexPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black flex flex-col">
-      <Header onReset={() => router.push('/')} />
+      <Header onReset={() => router.push('/tutor')} />
       <main className="mx-auto max-w-5xl w-full px-6 py-8">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">My Sessions</h1>
           <Link
-            href="/"
+            href="/tutor"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Start New Problem

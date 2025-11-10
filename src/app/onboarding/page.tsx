@@ -87,7 +87,7 @@ export default function OnboardingPage() {
         userProfile.interests.length > 0;
 
       if (isComplete) {
-        router.push('/');
+        router.push('/tutor');
       }
     }
   }, [userProfile, loading, router]);
@@ -165,7 +165,7 @@ export default function OnboardingPage() {
       }));
 
       await refreshUserProfile();
-      router.push('/');
+      router.push('/tutor');
     } catch (err) {
       console.error('Error completing onboarding:', err);
       setError('Failed to save your profile. Please try again.');

@@ -142,7 +142,7 @@ export default function SkillPracticePage() {
   if (authLoading || (mode === 'loading')) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black">
-        <Header onReset={() => router.push('/')} />
+        <Header onReset={() => router.push('/tutor')} />
         <div className="mx-auto w-full max-w-3xl px-6 py-10">
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 shadow-lg">
             <div className="flex items-start gap-4">
@@ -175,7 +175,7 @@ export default function SkillPracticePage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black flex flex-col">
-      <Header onReset={() => router.push('/')} />
+      <Header onReset={() => router.push('/tutor')} />
       <main className="flex-1 mx-auto w-full max-w-4xl px-6 py-6">
         {pageError && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">

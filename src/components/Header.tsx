@@ -38,7 +38,7 @@ export default function Header({ onReset }: HeaderProps) {
     <header className="border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity">
+          <Link href="/tutor" className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity">
             Math Tutor
           </Link>
 

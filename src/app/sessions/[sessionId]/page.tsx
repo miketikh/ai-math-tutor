@@ -257,7 +257,7 @@ export default function SessionPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black">
-        <Header onReset={() => router.push('/')} />
+        <Header onReset={() => router.push('/tutor')} />
         <main className="max-w-3xl mx-auto px-6 py-12">
           <div className="rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-900/50 dark:bg-red-950/30">
             <h2 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-2">Unable to open session</h2>
@@ -270,7 +270,7 @@ export default function SessionPage() {
                 View My Sessions
               </button>
               <button
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/tutor')}
                 className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
               >
                 Start New Problem
@@ -434,7 +434,7 @@ export default function SessionPage() {
           try {
             await pauseAndClearSession();
           } finally {
-            router.push('/');
+            router.push('/tutor');
           }
         }}
       />

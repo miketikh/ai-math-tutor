@@ -21,7 +21,7 @@ export default function LoginForm() {
 
     try {
       await signIn(email, password);
-      router.push('/'); // Redirect to home after login
+      router.push('/tutor'); // Redirect to tutor after login
     } catch (err: any) {
       setError(err.message || 'Failed to sign in');
     } finally {
@@ -35,7 +35,7 @@ export default function LoginForm() {
 
     try {
       await signInWithGoogle();
-      router.push('/');
+      router.push('/tutor');
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');
     } finally {
