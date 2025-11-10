@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { doc, setDoc, collection, getDocs, limit, orderBy, query, where, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,8 +46,10 @@ export default function Home() {
     addMessageToSession,
     updateSessionProgress,
     branchToSkill,
+    pauseAndClearSession,
   } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   // Local UI state
   const [extractedProblem, setExtractedProblem] = useState<string>('');
@@ -158,6 +160,15 @@ export default function Home() {
       }
     }
   }, [user, userProfile, loading, router]);
+
+  // Clear any active session when navigating to /tutor (e.g., via back button)
+  useEffect(() => {
+    if (!loading && pathname === '/tutor' && session) {
+      // User navigated to entry page with active session - clear it
+      console.log('🔄 Clearing stale session on /tutor');
+      pauseAndClearSession();
+    }
+  }, [pathname, loading, session, pauseAndClearSession]);
 
   // Show loading state while checking auth
   if (loading) {

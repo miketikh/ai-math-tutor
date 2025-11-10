@@ -2,7 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSession } from '@/contexts/SessionContext';
 import NewProblemButton from './NewProblemButton';
 
 interface HeaderProps {
@@ -12,6 +15,9 @@ interface HeaderProps {
 
 export default function Header({ onReset }: HeaderProps) {
   const { user, userProfile, logout } = useAuth();
+  const { session, pauseAndClearSession } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -34,16 +40,47 @@ export default function Header({ onReset }: HeaderProps) {
     setShowUserMenu(false);
   };
 
+  // Handle logo click - clear session if active before navigating to /tutor
+  const handleLogoClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (session) {
+      try {
+        await pauseAndClearSession();
+      } catch (err) {
+        console.error('Error clearing session:', err);
+      }
+    }
+
+    router.push('/tutor');
+  };
+
+  // Only show New Problem button on /sessions page
+  const showNewProblemButton = pathname === '/sessions';
+
   return (
     <header className="border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
-          <Link href="/tutor" className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity">
-            MathFoundry
-          </Link>
+          <a
+            href="/tutor"
+            onClick={handleLogoClick}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            <Image
+              src="/favicon/android-chrome-192x192.png"
+              alt="MathFoundry Logo"
+              width={40}
+              height={40}
+              className="rounded-lg"
+            />
+            <span className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+              MathFoundry
+            </span>
+          </a>
 
           <div className="flex items-center gap-4">
-            <NewProblemButton onReset={onReset} />
+            {showNewProblemButton && <NewProblemButton onReset={onReset} />}
 
             {user && (
               <div className="relative" ref={menuRef}>
