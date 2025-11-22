@@ -50,6 +50,30 @@ export function getSkillInfo(skillId: string): ClientSkillInfo | null {
   };
 }
 
+/**
+ * Get only the direct layer1 prerequisite skills for a given skill
+ * This is what should be sent to the AI for practice recommendations
+ * @param skillId - The skill to get layer1 prerequisites for
+ * @returns Array of layer1 prerequisite skills with id, name, and description
+ */
+export function getLayer1Skills(skillId: string): PrereqInfo[] {
+  if (!graph.skills) return [];
+  const skill = graph.skills[skillId];
+  if (!skill) return [];
+
+  const layer1Ids = skill.layer1 || [];
+  const results: PrereqInfo[] = [];
+
+  for (const id of layer1Ids) {
+    if (!id) continue;
+    const prereqSkill = graph.skills[id];
+    if (!prereqSkill) continue;
+    results.push({ id, name: prereqSkill.name, description: prereqSkill.description });
+  }
+
+  return results;
+}
+
 export function getPrereqs(skillId: string, limit = 6): PrereqInfo[] {
   if (!graph.skills) return [];
   const root = graph.skills[skillId];

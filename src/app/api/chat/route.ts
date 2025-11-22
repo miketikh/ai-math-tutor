@@ -5,8 +5,7 @@ import { analyzeStuckLevel, describeStuckLevel } from '@/lib/stuckDetection';
 import { getHintLevelPrompt } from '@/lib/prompts/hintLevels';
 import { validateResponse, getViolationDescription, generateFallbackResponse } from '@/lib/responseValidation';
 import { getStricterPromptWithContext } from '@/lib/prompts/stricterPrompt';
-import { detectComplexity, describeComplexityLevel } from '@/lib/problemComplexity';
-import { getLanguageGuidance, describeLanguageLevel } from '@/lib/prompts/languageAdaptation';
+import { getLanguageGuidance } from '@/lib/prompts/languageAdaptation';
 
 // Types for our Chat API
 export interface Message {
@@ -141,15 +140,6 @@ function buildMessagesArray(
   // Log stuck level for debugging (server-side only, not sent to client)
   console.log(`[Hint Level Detection] ${describeStuckLevel(stuckLevel)} (Level: ${stuckLevel})`);
 
-  // Detect problem complexity for language adaptation
-  // Use problem context if available, otherwise use current message
-  const textToAnalyze = problemContext || message;
-  const complexityLevel = detectComplexity(textToAnalyze);
-
-  // Log complexity level for debugging (server-side only, not sent to client)
-  console.log(`[Language Adaptation] ${describeComplexityLevel(complexityLevel)} (Level: ${complexityLevel})`);
-  console.log(`[Language Adaptation] Using: ${describeLanguageLevel(complexityLevel)}`);
-
   // Build system prompt with stuck level adjustments
   let systemMessage: string;
 
@@ -167,8 +157,8 @@ function buildMessagesArray(
       systemMessage += hintLevelGuidance;
     }
 
-    // Add language adaptation guidance based on problem complexity
-    const languageGuidance = getLanguageGuidance(complexityLevel);
+    // Add language adaptation guidance for middle school students
+    const languageGuidance = getLanguageGuidance();
     if (languageGuidance) {
       systemMessage += languageGuidance;
     }
@@ -201,13 +191,16 @@ function buildMessagesArray(
       if (relatedSkills && relatedSkills.length > 0) {
         const limited = relatedSkills.slice(0, 10);
         const list = limited.map(s => `  • [${s.id}] ${s.name}`).join('\n');
-        systemMessage += `\n- Related Skills (prerequisite skills the student can practice):\n${list}`;
+        systemMessage += `\n- Direct Prerequisite Skills (layer1 only - these are the ONLY skills available for practice):\n${list}`;
       }
       systemMessage += `\n\nPRACTICE RECOMMENDATION INSTRUCTIONS:
-- If the student is struggling with a concept that matches one of the Related Skills above, you can recommend they practice that skill
-- Only recommend practice after you've confirmed through conversation that they're missing prerequisite knowledge
+- The skills listed above are the DIRECT prerequisite skills (layer1) needed for the main problem
+- These are the ONLY skills you can recommend for practice - there are no other options
+- If the student is struggling with one of these specific prerequisite concepts, recommend they practice that skill
+- Only recommend practice after you've confirmed through conversation that they're missing this specific prerequisite knowledge
 - To recommend practice: In your JSON response, set needsPractice=true, practiceSkillId to the exact skill ID from the list above, practiceSkillName to the skill name, and practiceReason to a brief explanation
-- The practiceSkillId MUST be one of the IDs from the Related Skills list above - do not invent new IDs
+- The practiceSkillId MUST be one of the IDs from the Direct Prerequisite Skills list above - do not invent new IDs
+- If the student's struggle is not related to any of the listed prerequisite skills, set needsPractice=false
 - If no practice is needed, set needsPractice=false and leave other practice fields null`;
     }
 

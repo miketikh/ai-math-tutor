@@ -19,7 +19,8 @@ import SkillFork from '@/components/tutoring/SkillFork';
 import PracticeProblem from '@/components/tutoring/PracticeProblem';
 import SkillMastered from '@/components/tutoring/SkillMastered';
 import PracticeSidePanel from '@/components/tutoring/PracticeSidePanel';
-import { getPrereqs } from '@/lib/clientSkillGraph';
+import { getLayer1Skills } from '@/lib/clientSkillGraph';
+import { getKidFriendlyErrorMessage } from '@/lib/errorMessages';
 
 type InputMode = 'text' | 'image';
 
@@ -69,8 +70,8 @@ export default function Home() {
   const { addMessage, getConversationHistory, restoreMessages } = useConversation();
 
   const relatedSkillsForMain = useMemo(() => {
-    if (!session?.mainSkillId) return [] as ReturnType<typeof getPrereqs>;
-    return getPrereqs(session.mainSkillId, 20);
+    if (!session?.mainSkillId) return [] as ReturnType<typeof getLayer1Skills>;
+    return getLayer1Skills(session.mainSkillId);
   }, [session?.mainSkillId]);
 
   const relatedSkillPayload = useMemo(
@@ -258,7 +259,8 @@ export default function Home() {
       router.push(`/sessions/${newSession.sessionId}`);
     } catch (err) {
       console.error('Error creating session:', err);
-      addMessage('assistant', 'Sorry, I encountered an error creating your session. Please try again.');
+      const friendlyMessage = getKidFriendlyErrorMessage(err);
+      addMessage('assistant', friendlyMessage);
     } finally {
       setIsCreatingSession(false);
     }
@@ -386,8 +388,8 @@ export default function Home() {
       }
     } catch (err) {
       console.error('Error sending message:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      addMessage('assistant', `Sorry, I encountered an error: ${errorMessage}`);
+      const friendlyMessage = getKidFriendlyErrorMessage(err);
+      addMessage('assistant', friendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -428,7 +430,8 @@ export default function Home() {
       await startPractice(data.problems);
     } catch (err) {
       console.error('Error starting practice:', err);
-      addMessage('assistant', 'Sorry, I encountered an error generating practice problems. Please try again.');
+      const friendlyMessage = getKidFriendlyErrorMessage(err);
+      addMessage('assistant', friendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -476,9 +479,10 @@ export default function Home() {
       }, 2000);
     } catch (err) {
       console.error('Error submitting answer:', err);
+      const friendlyMessage = getKidFriendlyErrorMessage(err);
       setFeedback({
         isCorrect: false,
-        message: 'Sorry, there was an error checking your answer. Please try again.',
+        message: friendlyMessage,
       });
     } finally {
       setIsSubmittingAnswer(false);

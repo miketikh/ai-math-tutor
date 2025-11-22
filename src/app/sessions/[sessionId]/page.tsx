@@ -15,7 +15,8 @@ import SkillFork from '@/components/tutoring/SkillFork';
 import PracticeProblem from '@/components/tutoring/PracticeProblem';
 import SkillMastered from '@/components/tutoring/SkillMastered';
 import PracticeSidePanel from '@/components/tutoring/PracticeSidePanel';
-import { getPrereqs } from '@/lib/clientSkillGraph';
+import { getLayer1Skills } from '@/lib/clientSkillGraph';
+import { getKidFriendlyErrorMessage } from '@/lib/errorMessages';
 
 export default function SessionPage() {
   const router = useRouter();
@@ -53,8 +54,8 @@ export default function SessionPage() {
   const [error, setError] = useState<string | null>(null);
 
   const relatedSkillsForMain = useMemo(() => {
-    if (!session?.mainSkillId) return [] as ReturnType<typeof getPrereqs>;
-    return getPrereqs(session.mainSkillId, 20);
+    if (!session?.mainSkillId) return [] as ReturnType<typeof getLayer1Skills>;
+    return getLayer1Skills(session.mainSkillId);
   }, [session?.mainSkillId]);
 
   const relatedSkillPayload = useMemo(
@@ -171,8 +172,8 @@ export default function SessionPage() {
           }
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-        addMessage('assistant', `Sorry, I encountered an error: ${errorMessage}`);
+        const friendlyMessage = getKidFriendlyErrorMessage(err);
+        addMessage('assistant', friendlyMessage);
       } finally {
         setIsLoading(false);
       }
@@ -197,7 +198,8 @@ export default function SessionPage() {
       }
       await startPractice(data.problems);
     } catch (err) {
-      addMessage('assistant', 'Sorry, I encountered an error generating practice problems. Please try again.');
+      const friendlyMessage = getKidFriendlyErrorMessage(err);
+      addMessage('assistant', friendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -231,7 +233,8 @@ export default function SessionPage() {
           await nextProblem();
         }, 2000);
       } catch (err) {
-        setFeedback({ isCorrect: false, message: 'Sorry, there was an error checking your answer. Please try again.' });
+        const friendlyMessage = getKidFriendlyErrorMessage(err);
+        setFeedback({ isCorrect: false, message: friendlyMessage });
       } finally {
         setIsSubmittingAnswer(false);
       }
